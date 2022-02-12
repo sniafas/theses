@@ -1,0 +1,166 @@
+% Macros for LateX
+
+% Command \SetFigFont does NOTHING !!!!!!
+\newcommand{\SetFigFont}[3]{}
+
+
+
+% Math
+\newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}[section]
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[section]
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{example}{Example}
+\newtheorem{remark}{Remark}[section]
+\newtheorem{notation}{Notation}[section]
+
+\newcommand{\proof}{\noindent {\bf Proof:\ }}
+\newcommand{\defEnd}{\ \rule[-0.25mm]{0.25cm}{0.25cm}}
+\renewenvironment{proof}{\noindent\textbf{Proof:}}{\rule[-0.25mm]{0.25cm}{0.25cm}\vspace{1.8ex}}
+
+%\newenvironment{proof}{{\bf Proof:}}{\rule[-0.25mm]{0.25cm}{0.25cm}}
+%\newcommand{\proofEnd}{\ \rule[-0.25mm]{0.25cm}{0.25cm}}
+%\newenvironment{remark}{{\bf Remark:}}{\rule[-0.25mm]{0.25cm}{0.25cm}}
+
+%\newcommand{\proof}{\noindent {\bf Proof:\ }}
+
+%\newcommand{\defEnd}{\ \rule[-0.25mm]{0.25cm}{0.25cm}}
+%\newcommand{\smalltb}{\hspace*{.5cm}}
+
+% logical connectives
+%\newcommand{\And}{\land}
+\newcommand{\Or}{\lor}
+\newcommand{\Then}{\Longrightarrow}
+%\newcommand{\If}{\longleftarrow}
+\newcommand{\then}{\Longrightarrow}
+%\newcommand{\implies}{\supset}
+\newcommand{\Equiv}{\equiv}
+\newcommand{\Iff}{\Longleftrightarrow}
+% do not add \; to \bigAnd and \bigOr
+\newcommand{\bigAnd}{\bigwedge}
+\newcommand{\bigOr}{\bigvee}
+\newcommand{\poss}{\raisebox{-.2ex}{$\Diamond$}}
+\newcommand{\nec}{\raisebox{-.2ex}{$\Box$}}
+\newcommand{\cert}{\raisebox{-.2ex}{$\Box$}}
+\newcommand{\blackcirc}{\mbox{$\bigcirc \hspace*{-.75em} \bullet \ $}}
+\newcommand{\contains}{\sqsupset}
+
+% set operations
+%\newcommand{\complement}[1]{\overline{#1}}
+\newcommand{\union}{\cup}
+\newcommand{\bigunion}{\bigcup}
+\newcommand{\bigUnion}{\bigcup}
+\newcommand{\intersection}{\cap}
+\newcommand{\bigintersection}{\bigcap}
+\newcommand{\bigIntersection}{\bigcap}
+\newcommand{\maps}{\;\longrightarrow\;}
+
+% qq for "quine's quotes
+\newcommand{\lqq}{\mathopen{\raisebox{-.5ex}{${}^{{}^\lceil}$}\mskip-2.5mu}}
+\newcommand{\rqq}{\mathclose{\raisebox{-.5ex}{${}^{{}^\rceil}$}}}
+\newcommand{\qq}[1]{\lqq{#1}\rqq}
+
+% others
+\renewcommand{\bar}[1]{\overline{#1}}
+\newcommand{\tld}[1]{\widetilde{#1}}   % wide tilde
+\newcommand{\wht}[1]{\widehat{#1}}      % wide hat
+\newcommand{\tb}{\hspace*{0.25in}}
+%\newcommand{\tb}{\hspace*{3ex}}
+\newcommand{\htb}{\hspace*{0.12in}}
+\newcommand{\xor}{\,\otimes\,}
+%\newcommand{\comment}[1]{}
+\newcommand{\pair}[2]{\langle#1,#2\rangle}
+\newcommand{\throu}[2]{#1\ (D\; E\; S\; F)\ #2}
+\newcommand{\comb}[2]{\left( \begin{array}{c} #1 \\ #2 \end{array} \right)}
+\newcommand{\abs}[1]{\left|#1\right|}
+\newcommand{\size}[1]{\left\|#1\right\|}
+%\newcommand{\Intg}{{\Bbb Z}}
+\newcommand{\Rat}{{\Bbb Q}}
+\newcommand{\Real}{{\Bbb R}}
+
+\newcommand{\N}{{\Bbb N}}
+%\newcommand{\Intg}{{\cal Z}}
+%\newcommand{\Rat}{{\cal Q}}
+%\newcommand{\Real}{{\cal R}}
+
+\newcommand{\Int}{{\sf I}}   % intervals
+\newcommand{\tmodels}{\models_{\cal T}}
+\newcommand{\proves}{\vdash}
+\newcommand{\kf}[1]{\underline{\sf {#1}}}
+\newcommand{\mytheta}{\;\theta\;}
+\newcommand{\myxi}{\;\xi\;}
+\newcommand{\m}[1]{$\sf {#1}$}
+\newcommand{\clog}[1]{\[\sf {#1} \]}
+\newcommand{\arr}{$\rightarrow$}
+%\newcommand{\inft}{$\infty$}
+\newcommand{\la}{$\langle$}
+\newcommand{\ra}{$\rangle$}
+\newcommand{\ch}{$\ $}
+\newcommand{\join}{\Join}
+
+\newcommand{\In}{\;in\;}
+\newcommand{\Isa}{\;isA\;}
+\newcommand{\isA}{\;isA\;}
+
+% thesis macros
+% languages
+\newcommand{\con}{{\cal C}}
+\newcommand{\lang}{{\cal L}}
+\newcommand{\langp}{{\cal L}^+}
+
+% the structures of the above languages
+\newcommand{\Mlang}{{\bf M}_{\cal L}}
+\newcommand{\Mlangp}{{\bf M}_{{\cal L}^+}}
+
+% languages
+%\newcommand{\diPCL}{{\rm diPCL}}
+%\newcommand{\diTCL}{{\em diTCL}}
+%\newcommand{\dePCL}{{\em dePCL}}
+%\newcommand{\deTCL}{{\em deTCL}}
+
+% structures for the above languages
+\newcommand{\Sd}{{\bf D}}
+\newcommand{\Sz}{{\bf Z}}
+\newcommand{\Sq}{{\bf Q}}
+
+\newcommand{\Szi}{{\bf ZI_Z}}
+\newcommand{\Sqi}{{\bf QI_Q}}
+
+\newcommand{\Sdz}{{\bf DZ}}
+\newcommand{\Sdq}{{\bf DQ}}
+
+\newcommand{\Sdzi}{{\bf DZI_Z}}
+\newcommand{\Sdqi}{{\bf DQI_Q}}
+
+
+% Chronos reports
+\newcommand{\val}{\rightarrow}
+
+\def\ibi{\textbf{\textit{i}}}
+\def\ibj{\textbf{\textit{j}}}
+
+% Anomalies
+%\def\rem#1{\marginpar{\scriptsize #1}}
+\def\rem#1{}
+\def\nnn{~\\-------\\}
+
+\def\np{\ensuremath{\cal NP}}
+\def\oo{{\cal O}}
+\def\ibi{\textbf{\textit{i}}}
+\def\ibj{\textbf{\textit{j}}}
+\def\fand{\mbox{  and  }}
+\def\sup{\mathit{sup}}
+\def\inf{\mathit{inf}}
+\def\lv{\mbox{``}}
+\def\rv{\mbox{"}}
+\def\size#1{|\:#1\:|}
+%\def\restr#1#2{\mathit{Restrict}(#1,#2)}
+%\def\st#1{\mathit{Subtext}(#1)}
+\def\ep#1{\mathit{Epoints}(#1)}
+\def\wo#1{\mathit{Words}(#1)}
+
+% Cheats
+\def\figspa{\vspace{-1ex}}
+\def\figspb{\vspace{-3ex}}
+\def\figspc{\vspace{-4ex}}

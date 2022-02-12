@@ -1,0 +1,35 @@
+\chapter{Conclusions and Future Work} \label{c6:extenstionsandfuturework}
+\thispagestyle{empty}
+\epigraph{\itshape ``Once reached the goal, no one sees the sacrifices and the process you went through to get there''}
+{---Sun Tzu, \textit{The art of war}}
+
+
+\section{Conclusions}
+
+This thesis investigated methods to recognize and quantify image aesthetics in a certain photography style (Bokeh) which is characterized by the level in depth of field.
+The problem is treated as a task in image aesthetics quality assessment which approached with deep active learning.
+
+The first part of the thesis discusses about photography basics and how  photography styles are related with camera settings. We are referring to aesthetics as a general philosophical question and study the problem of quantification in image aesthetics, exploring the domain of IAQA.
+
+The next part attempts to cover the broader domain of artificial intelligence and machine learning and focuses in computer vision tasks using neural networks and deep learning. We studied the methodology and techniques to train a machine learning model and the subjected issue one can come across and possible methods to tackle them. We cover the topic of convolutional neural networks and related architectures.
+We are attempting to connect the deep learning domain with image aesthetics by covering the research in this field.
+The chapter closes with an extended study in active learning methodologies and scenarios combined with deep learning. In addition, we suggest a real world methodology that aims to contribute to the classical active learning approach without the use of closed annotation loop.
+
+Chapter~\ref{c4:intro} covers the data description where we present a recently publicly accessible data set with high resolution images and substantial aesthetics quality. We performed an exploratory data analysis and worked on two different annotation methods. 
+
+The last chapter presents the experimental process we followed to approach the problem. We utilized the annotated data sets to generate a deep learning classifier using a variety of different models of famous architectures with demonstrated SoTA results. We figured that the EXIF based data set had a limited reflection of the target problem thus we produced a carefully generated data set my manually annotating 1200 images with shallow/deep DoF content. The new \textit{DoF} data set, almost 10$\times$ smaller than the \textit{EXIF} one, recorded substantially improved performance achieving 80\% accuracy and F1-score.
+We were motivated to increase the classification performance while effectively reducing the annotation costs by applying active learning strategies. We performed an extended assessment, comparing regular ``passive learning'' with ``active learning'' techniques. The results were highly encouraged especially for the DenseNet model, that we trained from scratch, which recorded 6.4\% performance gain with only 600 more actively selected and annotated instances. Although VGG16 (pretrained) trained in random selection scored the highest accuracy and F1-score, it did not recorded such a gain in respect to the time budget, as in DenseNet. 
+Also we have to bear into mind that the DenseNet model architecture we have utilised has almost 3850$\times$ less parameters than VGG16, a substantially less amount of receptive field size, it trains more effectively, efficiently and it's lightweight during inference without the use of dedicated hardware acceleration.
+
+\section{Future Work}
+
+Through the extended experimentation and acquired knowledge in the domain, we would be able to apply the most simple query strategy framework, concerning active learning. The Deep Bayesian Active Learning scheme uses softmax activation to estimate the informativeness in unlabelled samples can be some times unreliable. An alternative method would be an uncertainty sampling with Markov Chain dropout estimations~\cite{gal2015bayesian}, to tackle the overconfidence of output of softmax that sometimes causes unreliability.
+To achieve this an architecture with dropout layers should be utilised and dropout layer should not be disabled during querying time to the active learner.
+
+We should point out that we started with a well performed classifier trained on a good amount of samples. We found out that the performance of our case study task, tops at 90\%, hence we already started from high enough.
+
+Having the means of evaluating active learning strategy in mind and not IAQA, an option could be, to start the bootstrap process and create an active learner with less samples. This can be assess more effectively the active learning scheme comparing to the passive learner, but can also indicate a different response in accuracy gain rate given the annotation budget.
+
+Another active learning option could be to try varying number of batches, e.g. smaller than 100 per batch, and repeat the experiments for the ALL strategy.
+
+Finally concerning the IAQA context, trained classifiers, can be used to transfer knowledge, to other photography styles. Bokeh style is quite semantically similar with long exposured photos, were most of the objects have smoothed edges.

@@ -1,0 +1,55 @@
+\chapter{Introduction} \label{c1:intro}
+
+The exponential growth of digital photography has turned to a new medium of artistic expression with the contribution of technology through more accessible smart capture devices and social media. Meanwhile the need for decision systems that can recognize, suggest and quantify photography styles is increasing.
+
+Such systems can contribute to rapid broadcast and understanding of high quality content with artistic features, to recommend and assist photography style techniques during photo capturing. Other applications that may benefit include content indexing and personalization, content-based image retrieval, etc.
+
+\section{Problem description}
+
+To begin with, aesthetics quantification is a non-trivial or even ill-posed open problem for the research community that has gained popularity in the latest decade with the substantial developments in neural networks and deep learning techniques.
+
+In general a way of quantifying such a problem is to make sure that a certain concept is reflected in the data and as well, the design of objectives should be able to address it.
+
+The practical usefulness of tackling this problem is by applying data-centric AI techniques that are more closely reflected with a ML application in practice.
+
+To approach the problem, we have used a recently published super high resolution data set with substantial aesthetic level content. 
+In photography, the term ``Bokeh'' has become kind of an aesthetic due to out of focus areas and the shallow depth of field that acts as a pleasing artificial effect of the 3d world in a two-dimensional surface, putting the subject at the spotlight.
+
+We followed different approaches, including an active learning method, to construct and annotate a new image data set based in depth of field.
+This thesis focuses on solving a binary classification task of deep/shallow depth of field discrimination. Moreover, in order to improve the estimator’s performance we have applied active learning techniques having in mind the less possible annotated data and evaluated them over regular data annotation and training process.
+
+The results of the conducted experiments were encouraging and foster the continuity of this work which contributed to the following:
+\begin{itemize}
+ \item a novel dataset based on depth of field
+ \item methodologies to improve active learning strategies for any image classification task
+ \item a pre-trained model, that will become available to the research community
+\end{itemize}
+
+%data volume is not the case to solve a problem , as we have experience it through this work. We have used an exif based automatically annotated dataset and a DoF based on human labels.
+
+\section{Thesis outline}
+
+The remainder of this thesis is organized as follows.
+In Chapter~\ref{c2:photography_aesthetics} we introduce the art of photography referring to image aesthetics and fundamental perception concepts.
+Chapter~\ref{c3:intro} presents the recent developments in artificial intelligence and machine learning focusing on computer vision. Additionally we present active learning strategies and how can contribute to assist to annotate a data set more efficiently and at the same time improve the estimator's performance.
+Chapter~\ref{c4:intro} describes the data set of our case study. It includes a data exploratory analysis, image preprocessing techniques and the methods we followed to annotate our own data set based on depth of field.
+Chapter~\ref{c5:intro} presents the experimental methodology we followed to design a binary classification method for depth of field recognition. As described before, much attention has been paid to utilise active learning methods to produce annotations that increase the classification performance. We evaluate and compare these methods to regular training techniques providing an extensive set of results.
+Chapter~\ref{c6:extenstionsandfuturework} presents the overall conclusions of the thesis, along with possible future works that stem from this work.
+
+
+
+% about perception and depth of field, stereo vision, 
+% about photography, dof factor, aperture, focal length
+% image aesthetics, relevant wrk, handcrafted features, ml, dl, semi/super/un/vised learning, cnn, architectures, transfer learning, sota, datasets
+% unsplash dataset
+% exif and problems, supervised performance
+% manual annotation 
+% embeddings performance between pretrained and ours
+% active learning on set of photos
+% hold out a set of photos for autmatic annotation in active learning and use that set (which is annotated) for ground truth, and check the performance of active learning vs supervised learning
+% use a stepping performance plot for active learning vs supervised learning process
+% trained on the set of human annotated labels vs active learning labels
+% produce new embeddings for the query system
+% evaluate system's retrieval performance from embeddings, within precision-recall-f1
+% bonus: train a generative unsupervised to for embedding representation and evaluate it as a retrieval system vs the above
+% future work

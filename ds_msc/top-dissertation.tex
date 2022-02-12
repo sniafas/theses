@@ -1,0 +1,151 @@
+\documentclass{thesis}
+
+\usepackage{doublespace}
+\usepackage{url}
+\usepackage{epsfig}
+\usepackage{subfigure}
+\usepackage{hhline}
+\usepackage{fancyhdr}
+\usepackage{lettrine}
+\usepackage{listings}
+\usepackage{titlesec}
+\usepackage{multirow}
+\usepackage{longtable}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage[shortlabels]{enumitem}
+\usepackage{nccmath}
+%\usepackage[LGRx,T1]{fontenc}
+\usepackage[utf8]{inputenx}
+\usepackage[toc,page]{appendix}
+\usepackage[greek,english]{babel}
+%\usepackage[iso-8859-7]{inputenc}
+
+%\usepackage{color}
+\usepackage{makeidx}
+
+%write proverbs quotes
+\usepackage{epigraph}
+\setlength\epigraphwidth{.5\textwidth}
+\setlength\epigraphrule{0pt}
+\makeindex
+
+%\usepackage[pdftex]{hyperref}
+
+\input{macros.tex}
+\input{abbreviations.tex}
+
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+
+\renewcommand{\topfraction}{0.8}
+\renewcommand{\bottomfraction}{0.8}
+\renewcommand{\textfraction}{0.1}
+
+\renewcommand{\figwidth}{0.75\textwidth}
+
+\newcommand{\attn}[1]{ {\bf {[*** #1 ***]}}}
+
+\newcommand{\iCluster}{i\textsl{Cluster} }
+\newcommand{\iClustercomma}{i\textsl{Cluster}, }
+\newcommand{\iClusterDL}{i\textsl{ClusterDL} }
+\newcommand{\iClusterDLcomma}{i\textsl{ClusterDL}, }
+\newcommand{\iClusterDLdot}{i\textsl{ClusterDL}. }
+
+\setcounter{topnumber}{2}       % Maximum # of floats at top of page
+\setcounter{bottomnumber}{2}    % Maximum # of floats at bottom of page
+\setcounter{totalnumber}{3}     % Maximum total # of floats on one page
+\setcounter{secnumdepth}{4}
+
+\vfuzz1pc   % Don't bother to report overfull boxes if over-edge is < 1pc
+\hfuzz1pc   % Don't bother to report overfull boxes if over-edge is < 1pc
+
+%\renewcommand{\baselinestretch}{2}
+\onehalfspace  % use: \singlespace, \onehalfspace, \doublespace
+
+\hyphenation{da-ta-ba-ses}
+
+\selectlanguage{greek}
+%http://tex.stackexchange.com/questions/118000/hyphenation-command-does-not-work-with-greek-words
+%\hyphenation{δι-α-χεί-ρι-ση}
+
+\selectlanguage{english}
+\begin{document}
+
+\title{}
+\author{}
+% \frontmatter
+
+\pagestyle{empty}
+
+\titlepage
+
+\makemycopyrightpage
+
+\makemysignaturespage
+
+\makemydeclarationpage
+
+\normalsize
+
+\input{appendix/ack}
+\input{appendix/abstract-gr}
+\input{appendix/abstract}
+
+\pagestyle{fancy}
+
+% inserts table of contents, list of tables, list of figures, list of symbols and list of abbreviations
+\afterpreface
+
+\mainmatter
+
+\pagestyle{fancy}
+
+
+% ------------------------------------------------------------------------ Chapter:Intro
+
+\input{chap1-introduction/introduction}
+\newpage
+
+% -------------------- Chapter 2 --------------------------------------- #
+
+\input{chap2-perception-and-photography/perceptionandphotography}
+\newpage
+
+% -------------------- Chapter 3 --------------------------------------- #
+\input{chap3-ml-dl-al/mldlal}
+\newpage
+
+% -------------------- Chapter 4 --------------------------------------- #
+\input{chap4-the-unsplash-dataset/theunsplashdataset}
+\newpage
+
+% -------------------- Chapter 5 --------------------------------------- #
+\input{chap5-experiments-results/experimentsresults}
+\newpage
+
+
+% once reached the goal, no one sees the sacrifices and the process you
+% went through to get there - Sun Tzu, the art of war
+\input{chap6-conclusionsandfuturework/conclusionsandfuturework}
+
+\clearpage
+
+
+\appendix
+%\section{\\Title of Appendix A}
+% the \\ insures the section title is centered below the phrase: AppendixA
+
+%Text of Appendix A is Here
+\input{appendix/appendix1}
+\backmatter
+
+% ------------------------------------------------------------------------ Bibliography
+
+\bibliographystyle{unsrt}
+\bibliography{thesis}
+
+% ------------------------------------------------------------------------ End Bibliography
+
+\printindex
+
+\end{document}
