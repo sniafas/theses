@@ -1,0 +1,255 @@
+\chapter{Web Platform}\label{web}
+\section{Introduction}
+
+%  In this thesis, apart from the theoretical aspect of image retrieval, we also present a practical aspect by implementing a web platform application, namely \textit{RetBul} (Building Retrieval).
+In this chapter we present RetBul (Building Retrieval) a web platform for off-line and on-line image retrieval evaluation purposes.Its goal is twofold: a)to achieve more integrated and coherent results, concerning the experiment and evaluation process and b) to act as a demo application for this work. As soon as, the domain of our research lies on images and image retrieval analysis, we believe that the existence of this system is vital for the system assessment either by a simple user or by an experienced researcher.
+
+Following in Section~\ref{architecture} we present the Architecture of the web platform, in Section~\ref{retbulmethod} we elaborate with the methodology of the proposed application, closing in Section~\ref{walkthrough} with a short walkthrough of the application.
+
+% As it has been previously mentioned, we have also implemented a web platform, which shall be described in detail in the next section~\ref{web}.
+Using the platform presented in this Chapter and more specifically its ``offline'' section, one may easily reproduce the aforementioned experiments.
+To tune the platform so as to increase user experience, in terms of ``optimizing'' the returned results, we have used the aforementioned conclusions of Section~\ref{exp_discussion}, to select descriptor settings and an appropriate value of the inlier threshold, for the case of detection.
+% Of course, since experiments have already been offline executed, we chose settings that maximize performance,
+Moreover, since the experiments have been performed offline, the settings that maximize performance are applied, although they required more execution time.\\
+On the other hand and for the ``online'' section, i.e., the one that users are allowed to upload their own images, real time experiments take place, thus the faster (in terms of execution time) setting has been adopted.
+
+\newpage
+\section{Architecture}\label{architecture}
+
+The platform is supported by the IaaS Service \textit{Okeanos}~\cite{okeanos}, which provides a virtual compute and network service as shown in Fig.~60(a).
+Infrastructure as a service (IaaS) refers to online services that abstract the user from the details of infrastructure like physical computing resources, location, data partitioning, security etc.
+ 
+Okeanos is a GRNET's (Greek Research and Technology Network)\footnote{\url{https://okeanos.grnet.gr/home/}} project, available to the academic and research community, in order to promote academic, educational and research aims. The distributed computing and network resources can be optimized in order to host services or for experimental purposes. 
+
+The virtualization service of Okeanos , is called Cyclades~\cite{cyclades}, where we use our own virtual machine running on Linux Operating System with Debian Server distribution~\cite{debian}, with 2 processing cores on 2Ghz, 6 GBs RAM and 100GB of storage as shown in Fig.~\ref{fig:cyclades}.
+\begin{figure}
+    \centering
+    \subfigure[]{\label{fig:okeanos}\includegraphics[width=75mm]{attachments/pictures/okeanos.png}}
+    \subfigure[]{\label{fig:cyclades}\includegraphics[width=75mm]{attachments/pictures/cyclades.png}}
+    \caption{Okeanos home page and cyclades control panel.}
+\end{figure}
+Concerning the architectural modules of our platform, core development and image processing services have  utilized the well-known \textit{OpenCV}~\cite{bradski2000opencv} framework while web and user interface are implemented with \textit{Laravel}~\cite{otwell2015laravel} MVC framework. Finally, the dataset is stored in a MySql~\cite{mysql2004mysql} relational database.
+ 
+OpenCV (Open Source Computer Vision) is a library of programming functions for realtime computer vision. It uses a BSD license and hence it’s free for both academic and commercial use. It has C++, C, Python and Java (Android) interfaces and supports Windows, Linux, Android, iOS and Mac OS. It has more than 2500 optimized algorithms.
+ 
+Laravel if a ``full stack'' MVC framework, written in PHP, capable of handling everything from web serving to database management right down to plain HTML generation. Interaction with Laravel is made through a command-line utility that generates and manages the Laravel project environment named \textit{Artisan} that can be used to generate skeleton code and database schema stubs.
+
+In a more high level of abstraction, Laravel framework follows the Model-View-Controller (MVC) architectural pattern, which enforces a separation between ``business logic'' from the input and presentation logic associated with a graphical user interface (GUI) \ref{fig:mvc}. The MVC pattern is very popular in the web development space and as we mentioned is consisted from the following components:
+\begin{itemize}
+    \item \textit{Model} -- The domain that the software is built around. Models represent real world items such as a
+    product, person or a dataset in our occasion which is consisted of imageId, imagePath, building class etc. Models are typically permanent and will be stored in a database.
+    \item \textit{View} -- It is usually the resulting markup that the framework renders to the browser, such as the HTML representing of platform. The view layer is responsible for generating a user interface, normally based on data in the model.
+    \item \textit{Controller} -- Controller is the component that links the model with view, responsible to handle the user input related to the business logic. It usually performs input process and validation (query image) while it can update or react with model's state (retrieved results according the dataset). It also send commands to its associated view, changing the view's presentation (rendering the results as a web page).
+\end{itemize}
+ 
+\begin{figure}[h!]
+  \centering
+  \includegraphics[scale=0.07]{attachments/pictures/mvc.png}
+  \caption{MVC architecture components.}
+  \end{figure} 
+\label{fig:mvc}
+
+
+\section{Method}\label{retbulmethod}
+
+\textit{RetBul} offers a friendly user interface while embeds a variety of unique features. The platform is designed to support offline and online interaction with experiments while it can be used as an educational tool to foster the concepts of retrieval and detection.\\
+
+In offline mode (Sec.~\ref{offline}), quering a single image, a series of montaged images (query-train image) are retrieved in descending ranking order, according to the number of tentative correspondences (inliers). Platform is designed to distinct the recall and detection oriented results which we elaborate extensively by the next Section~\ref{walkthrough}.
+It should be noted that offline results have already been performed using a manually created groundtruth of the total dataset, through the whole database of the 900 images of 60 buildings.
+ 
+In online mode (Sec.~\ref{online}), a pair of experiment scenarios can be executed in real time by the user:
+ \begin{enumerate}
+  \item Query a pair of images from database, processed in real time, using the selected descriptor,  which provides a montaged image of the strongest matching tentative points.
+  \item Upload or query a user defined image, processed through the best 60 representative building images of the RetBul database.
+ \end{enumerate}
+
+
+\section{Walkthrough}\label{walkthrough}
+
+In this section we present a walkthrough of the implemented web platform. All the aforementioned experimental methods can be accessed through the application RetBul and can be found in the following url: \url{http://retbul.sniafas.eu}.
+The welcome screen of the online application is illustrated on the Fig.~\ref{fig:retbul}.
+  
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.35]{attachments/pictures/retbul.png}
+  \caption{Retbul home page}
+  \label{fig:retbul}
+\end{figure} 
+
+\newpage
+
+\subsection{Offline Experiments}\label{offline}
+
+
+As we mentioned before, in offline section,  (Fig.~\ref{fig:offline-blade}), a randomly selected image can be selected with the given descriptor method chosen and as a response, a series of montaged images are retrieved and rendered with decreasing similarity, according to:
+\begin{itemize}
+    \item identical building retrieved captures (see Fig.~\ref{fig:offline_class_results}), and
+    \item total number of buildings retrieved captures. (see Fig.~\ref{fig:offline_total_results}).
+\end{itemize}
+
+Entering the home page, there two ways to enter the offline experiments, either choosing the ``Try now!'' button (Fig.~\ref{fig:trynow}) or just selecting the ``Offline'' from the navigation menu (Fig.~\ref{fig:offlinenav}).
+
+
+
+\begin{figure}[ht!]
+  \centering
+  \includegraphics[scale=0.35]{attachments/pictures/offline_button.png}
+  \caption{Navigate to offline experiments from home screen.}
+  \label{fig:trynow}
+\end{figure} 
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.4]{attachments/pictures/offline_nav.png}
+  \caption{Navigate to offline experiments through navigation panel.}
+  \label{fig:offlinenav}
+\end{figure} 
+
+The offline section provides a randomly chosen image, the best frontal view of each house. Selecting one of the 
+available descriptors, and clicking on the ``Go'' button, will trigger the corresponded ``offline'' experinent (Fig.~\ref{fig:offline-blade}).
+In this case, the result page will be presented, and in the center of the screen two buttons ``Class Results''
+and ``Total Results'' will trigger the following results.
+``Class Results'' represents the detection scenario (Fig.~\ref{fig:offline_class_results}) as only the same building results appear.
+``Total Results'' represents the retrieval scenario (Fig.~\ref{fig:offline_total_results}) where the results derive from the total number of buildings.
+
+
+According to the ``Total Results'', only the images that are matched with at least $8$ inlier correspondences are presented to the user, in order to preserve coherence and consistency. 
+
+
+
+\begin{figure}[ht!]
+  \centering
+  \includegraphics[scale=0.35]{attachments/pictures/offline-blade.png}
+  \caption{Offline section. Images shown are randomly selected from entire dataset.}
+  \label{fig:offline-blade}
+\end{figure} 
+
+
+\begin{figure}[htp!]
+  \centering
+  \includegraphics[scale=0.35]{attachments/pictures/offline_class_results.png}
+  \caption{Offline Section. Identical building retrieved images.}
+  \label{fig:offline_class_results}
+
+\end{figure} 
+
+\newpage
+
+\begin{figure}[htp!]
+  \centering
+  \includegraphics[scale=0.35]{attachments/pictures/offline_total_results.png}
+  \caption{Offline Section. Total number of retrieved images in all database buildings.}
+  \label{fig:offline_total_results}
+\end{figure} 
+
+\subsection{Online Experiments}\label{online}
+
+In the online section, interaction with the web platform takes place in real-time through a variety of available experiments.
+Fig.~\ref{fig:online_pair} illustrates the panel of online image pair experiment.
+Pair experiment enables a random user defined experiment through any image of the Vyronas database.
+Platform will validate when a pair is selected and executes the query with a chosen descriptor, i.e. SIFT or SURF. 
+Results are shown in Fig.~\ref{fig:online_pair_features} that depicts the extracted features while in Fig.~\ref{fig:online_pair_matching} the estimated correspondences of the selected images are illustrated.
+
+
+
+\begin{figure}[htp!]
+  \centering
+  \includegraphics[scale=0.35]{attachments/pictures/online_pair.png}
+  \caption{Online Section. Selecting a pair of images.}
+  \label{fig:online_pair}
+\end{figure} 
+
+\newpage
+
+\begin{figure}[htp!]
+  \centering
+  \includegraphics[scale=0.5]{attachments/pictures/online_pair_features.png}
+  \caption{Online Section. Extracted features from pair experiment.}
+  \label{fig:online_pair_features}
+\end{figure} 
+
+\begin{figure}[ht!]
+  \centering
+  \includegraphics[scale=0.5]{attachments/pictures/online_pair_matching.png}
+  \caption{Online Section. Estimated homography in pair experiment.}
+  \label{fig:online_pair_matching}
+\end{figure} 
+
+Alternatively, to enable a more challenging to the user experience, RetBul is capable to handle
+experiments from uploaded images.
+In order to get proper results, the uploaded query image should also be in portrait orientation and up to 2Mb, in order to match the ground truth database orientation.
+
+The afforemented use case is part of the online experiment, where the user selects an uploaded image along with a descriptor method as shown in Fig.~\ref{fig:online_upload}.
+Next, query image will be trained with the handpicked set of $60$ photos, the  
+frontal faces of all buildings in our database as we mentioned in Sections~\ref{exp_discussion} and~\ref{evaluation}.
+
+Fig.~\ref{fig:online_results} illustrates the retrieved images 
+%with the estimated homographies in decreasing ranking
+along with the matched keypoints, ranked in decreasing order
+according to the number of inliers. Along with the rendered results, a table showing the
+calculated results is also provided, as shown in Fig.~\ref{fig:online_table}
+
+
+\begin{figure}[ht!]
+  \centering
+  \includegraphics[scale=0.4]{attachments/pictures/online-blade-upload.png}
+  \caption{Online Section. Select or upload user defined visual queries.}
+  \label{fig:online_upload}
+\end{figure} 
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.5]{attachments/pictures/online_table.png}
+  \caption{Online Section. Table with calculated results.}
+  \label{fig:online_table}
+\end{figure} 
+
+\newpage
+\begin{figure}[ht!]
+  \centering
+  \includegraphics[scale=0.4]{attachments/pictures/online_total_results.png}
+  \caption{Online Section. Ranked results according to the number of inliers. The blue lines correspond to matched keypoints.}
+  \label{fig:online_results}
+\end{figure} 
+
+
+Closing, we presenting a demonstration with a fine result in the contrast to a poor result for the Detection and Retrieval scenarios.
+
+\textbf{\large{Detection Scenario}}\\
+Fig.~\ref{fig:poor_det} demonstrates an example with poor detection performance. Specifically, the first 9 results are shown, from which only the first 6 have a number of inliers greater than or equal to 9. In contrast, Fig.~\ref{fig:fine_det} depicts a case with good performance where all the top 9 retrieved images are characterized by a high number of inliers.
+
+
+%a poor result is depicting a sample of the 9 first retrieved results.
+%Only the first 6 can be proven liable with inliers equals to 9, while the rest 3 results are equal to 8 inliers.\\
+%In the contrary the sample of Fig.~\ref{fig:fine_det} depicts a fine results of retrieved buildings,
+%while till the latest can be considered liable.
+
+\begin{figure}[ht!]
+  \centering
+  \includegraphics[scale=0.4]{attachments/pictures/poor_det.png}
+  \caption{Demonstation of a detection scenario with poor results.}
+  \label{fig:poor_det}
+\end{figure}
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.4]{attachments/pictures/fine_det.png}
+  \caption{Demonstation of detection scenario with fine results.}
+  \label{fig:fine_det}
+\end{figure} 
+
+\textbf{\large{Retrieval Scenario}}\\
+Fig.~\ref{fig:poor_ret} with the previous building,has proven also poor results in retrieval scenario,
+where only the first 4 buildings are similar to the query.In the contrary the sample of Fig.~\ref{fig:fine_ret} depicts a fine result of retrieved buildings, where all the first 9 retrieved buildings are similar to the query.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[scale=0.4]{attachments/pictures/poor_ret.png}
+  \caption{Demonstation of a retrieval scenario with poor results.}
+  \label{fig:poor_ret}
+\end{figure}
+\begin{figure}[ht!]
+  \centering
+  \includegraphics[scale=0.4]{attachments/pictures/fine_ret.png}
+  \caption{Demonstation of a retrieval scenario with fine results.}
+  \label{fig:fine_ret}
+\end{figure} 

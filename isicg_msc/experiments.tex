@@ -1,0 +1,904 @@
+\chapter{Experiments}\label{experiments}
+
+\section{Introduction}
+
+%Edw Stayro ua prepei na peis genika oti ua paroysiasoyme ta peiramata poy skopo exoyn thn apotimhsh klp klp. Epeita, ua paroysiaseis ta sections, dhladh oti sto 4.2 ua paroysiasoyme mia nea bash, thn vyronas. Sto 4.3 oti perigrafetai th meuodologia me thn opoia ginan ta peiramata. Sto 4.4 oti paroysiasontai ta apotelesmata klp. Sto 4.5 oti epekteinoyme ta peiramata kai sthn Oxford dataset. Kai oti telos sto 4.6 paroysiazoynme mia syzhthsh sxetika me ta apotelesmata.
+%Synepws, h paragrafos poy exeis edw sxetika me thn Oxford klp prepei na mpei sthn arxh toy 4.5.
+There exists a wide variety of data sets available on the Internet that can be used as a
+benchmark by researchers in the field of image retrieval. In this chapter we present a series of structured experiments in order to evaluate the afforementioned techniques in the previous chapter. Moreover, in Sec.~\ref{vyronas_db} we propose a new dataset, the Vyronas database, under determined structure. Following in Sec.~\ref{evaluation} is introduced the evaluation protocol of the experimental results while in Sec.~\ref{plots} experimental results are presented as well.
+In addition, Sec.~\ref{oxfordsec} elaborated with the extension of our proposed dataset and evaluation methodology with Oxford building dataset and finally in Sec.~\ref{exp_discussion} we present and extensive discussion over the experiment evalution.
+
+
+\section{The Vyronas Database}\label{vyronas_db}
+%As it has already been mentioned, for the sake of the evaluation of the proposed platform we have created a new building database.
+In this thesis a new building database named ``Vyronas database'' is proposed.
+%This
+The database comprises of 900 photos taken from 60 buildings in the area of Vyronas, Athens, Greece.
+Fig.~\ref{fig:map_vyronas} illustrates a map of the locations of all these buildings. 
+% Moreover in Fig.~\ref{fig:total_seq} we illustrate the frontal face of all buildings. 
+%As one may easily observe, we have selected various styles of buildings dated between approx. 1970 till today.
+The database consists of urban buildings with a variety of architectural  specifications, number of floors, construction age, colors, etc.
+For each building we have took a series of 15 photos, under 5 viewpoints and 3 illumination conditions. 
+All photos are taken between April--June, 2016. More specifically, we have taken photos during:
+\newpage
+\begin{enumerate}
+    \item morning (approx. between 10:00AM -- 2:00PM),
+    \item noon (approx. 5:00PM -- 7:00PM),
+    \item cloudy days (spanned in several daytimes and within 7 days).  
+\end{enumerate}
+
+\begin{figure}[ht!]
+  \centering
+  \includegraphics[scale=0.45]{attachments/pictures/map_vyronas.png}
+  \caption{Region of Vyronas, Athens, Greece. The red marks denote the location of the buildings.}
+  \label{fig:map_vyronas}
+\end{figure} 
+
+
+Figs.~\ref{fig:building_seq} and \ref{fig:building2_seq} we illustrate the sets of photos taken from 2 different buildings. 
+We should note that all photos are taken using the same consumer camera, i.e., a Nikon Coolpix P80 (10.1 Mpixels).
+We set the JPEG quality to the best available and resolution 2736$\times$3648 px. During the acquisition of dataset we obviously met with various impediments that delayed the process such as the width of the road or the troublesome spots(trees, parked cars) in order to capture the right viewing angles. In addition, in some awkward cases we have been spotted by pedestrians or residents, capturing photos of buildings.
+
+
+The database is freely available for non-commercial use. Specifically, it can be found in the well-known Flickr~\footnote{\url{https://www.flickr.com/photos/139433384@N07/}} website which facilitates image browsing but is also provided as a compressed file containing all photos and the appropriate annotations~\footnote{\url{http://retbul.sniafas.eu/}}.
+
+%Among our initial goals was to provide a dataset that would be used for building retrieval, thus we have made it public by a) uploading to the well-known Flickr website, in order to facilitate browsing~\footnote{\url{https://www.flickr.com/photos/139433384@N07/}} and b) providing a compressed file containing all photos and the appropriate annotation~\footnote{\url{http://retbul.sniafas.eu/todo}}.
+
+\begin{figure} %sample of a building
+    \centering
+    \subfigure{\includegraphics[width=20mm]{attachments/images/single_house2/22-1.jpg}}
+    \subfigure{\includegraphics[width=20mm]{attachments/images/single_house2/22-2.jpg}}
+    \subfigure{\includegraphics[width=20mm]{attachments/images/single_house2/22-3.jpg}}
+    \subfigure{\includegraphics[width=20mm]{attachments/images/single_house2/22-4.jpg}}
+    \subfigure{\includegraphics[width=20mm]{attachments/images/single_house2/22-5.jpg}}
+    
+    \subfigure{\includegraphics[width=20mm]{attachments/images/single_house2/22-6.jpg}}
+    \subfigure{\includegraphics[width=20mm]{attachments/images/single_house2/22-7.jpg}}
+    \subfigure{\includegraphics[width=20mm]{attachments/images/single_house2/22-8.jpg}}
+    \subfigure{\includegraphics[width=20mm]{attachments/images/single_house2/22-9.jpg}}
+    \subfigure{\includegraphics[width=20mm]{attachments/images/single_house2/22-10.jpg}}
+    
+    \subfigure{\includegraphics[width=20mm]{attachments/images/single_house2/22-11.jpg}}
+    \subfigure{\includegraphics[width=20mm]{attachments/images/single_house2/22-12.jpg}}
+    \subfigure{\includegraphics[width=20mm]{attachments/images/single_house2/22-13.jpg}}
+    \subfigure{\includegraphics[width=20mm]{attachments/images/single_house2/22-14.jpg}}
+    \subfigure{\includegraphics[width=20mm]{attachments/images/single_house2/22-15.jpg}}
+     
+    \caption{Sample of a unique building in database including all the captures with visual content changes.}
+    \label{fig:building2_seq}
+\end{figure}
+
+
+\section{Evaluation Protocol}\label{evaluation}
+
+For all experiments we chose not to use the full image size, since as it has been shown e.g., in~\cite{kalantidis2011viral}, medium images sizes are enough for efficient retrieval.
+Thus, all images have been resized at a resolution 480$\times$640 pixels. From each image we extracted SIFT and SURF features divided in two individual sets of parameters, in order to distinguish optimal results.
+The performance of a region descriptor is measured by the matching criterion, i.e., how well the descriptor represents a scene region. This is measured by comparing the number of corresponding regions
+obtained with the ground truth and the number of correctly matched regions. Matches are the nearest neighbors in the descriptor space~\cite{mikolajczyk2005performance}.
+In this case, the two regions of interest are matched if the Euclidean distance between their descriptors \texttt{$Descriptor_a$} and \texttt{$Descriptor_b$} is below a threshold $\tau = 0.75$
+% As we mention in Section~\ref{descriptors} we evaluate the problem with the following variations:
+For each image dataset, two different evaluation scenarios are applied:
+
+% \begin{itemize}
+%     \item a \textit{detection} problem: the purpose on the given query to the system is to define the number of inlier threshold in order to get the best possible F Measure performance.
+%     \item a \textit{retrieval} problem:  the purpose on the given query to the system is to define the number of inlier threshold in order to get the best possible MAP performance.
+% \end{itemize}
+\begin{itemize}
+    \item \textit{Detection} scenario: Evaluate the system considering it as a detection problem. For a given query the system returns the set of all images that are relevant to this query. The criterion used is the number of matching inliers. The evaluation is based on the precision, and recall measures and aims to define the inliers threshold that provides the best performance in terms of the F-Measure measure.
+
+    \item \textit{Retrieval} scenario: Evaluate the system considering it as a retrieval problem. For a given query the system calculates a relevance score for each image in the dataset and returns a ranked list of all images based on their score. Again, the criterion used is the number of matching inliers and the aim is to define the inliers threshold that provides the best performance in terms of theThe evaluation is based on the Mean Average Precision (MAP) measure.
+\end{itemize}
+
+For the SIFT~\footnote{\url{http://docs.opencv.org/3.1.0/d5/d3c/classcv_1_1xfeatures2d_1_1SIFT.html}}  algorithm we used the following set of parameters:
+
+\begin{enumerate}[(a)]
+ \item Default values
+ \item Default values + contrastThreshold : 0.08
+\end{enumerate}
+
+while for the SURF~\footnote{\url{http://docs.opencv.org/3.1.0/d5/df7/classcv_1_1xfeatures2d_1_1SURF.html}} features we used:
+\begin{enumerate}[(a)]
+ \item Default values.
+ \item Default values + Upright : true (U-SURF)
+\end{enumerate}
+% \begin{enumerate}[(a)]
+%  \item Number of features : \textbf{auto}, OctaveLayers : \textbf{auto}, contrastThreshold : 0.04, edgeThreshold : \textbf{auto}, sigma : \textbf{auto}
+%  \item Number of features : \textbf{auto}, OctaveLayers : \textbf{auto}, contrastThreshold : 0.08, edgeThreshold : \textbf{auto}, sigma : \textbf{auto}
+% \end{enumerate}
+% while for the SURF features we used:
+% \begin{enumerate}[(a)]
+%  \item HessianThreshold : 200, nOctaves : 3, nOctaveLayers : \textbf{auto}, extended : \textbf{false} ,upright : \textbf{false}
+%  \item HessianThreshold : 200, nOctaves : 3, nOctaveLayers : \textbf{auto}, extended : \textbf{false} ,upright : \textbf{true}
+% \end{enumerate}
+Concerning the SIFT features we chose to alter the ``contrast threshold'' parameter as it is used to filter out weak features in semi-uniform (low-contrast) regions. The larger the threshold, the less features are produced by the detector. 
+While in the SURF features, we chose to alter the ``upright'' parameter as it switches between the computation of orientation of each feature or not.
+
+We kept all features of every image stored in the local filesystem.
+For the evaluation of the system two main experiments with different image query subsets are defined, each one serving a different purpose.
+\begin{enumerate}
+    \item a handpicked subset consisted of 90 photos which are actually all photos from 6 different buildings. With this experiment we try to investigate how well the images related to a building are retrieved when single photos from different views of this building are used as queries. 
+    For this purpose the 6 buildings are selected to be as visually heterogeneous as possible.
+    This subset is illustrated in Fig.~\ref{fig:exp2_seq}. 
+    \item a handpicked subset consisted of 60 photos that illustrate the frontal view of all buildings. 
+    Thus, for each building a single query photo is applied. The experiment's purpose is to examine how well the frontal view of a house can be used in order to retrieve all the images of a given building. This subset is illustrated in Fig.~\ref{fig:total_seq}.
+\end{enumerate}
+%We did not use all images as queries, but rather we selected two subsets:
+% \begin{enumerate}
+%     \item a handpicked set consisting of \textbf{90} photos which are actually all photos from 6 buildings. We have chosen these buildings so as to be as heterogeneous as possible. This set is illustrated in Fig.~\ref{fig:exp2_seq}. 
+%     \item a handpicked set consisting of \textbf{60} photos that illustrate the frontal faces of all buildings taken either in morning or in noon. The choice of which photo to keep each time was empirical, i.e., we kept the one that seemed to be the ``best'' to an experienced human observer. This set is illustrated in Fig.~\ref{fig:total_seq}.
+% \end{enumerate}
+For the evaluation of the results we chose to use the following well-known metrics \textit{Precision, Recall and F-Measure}: %precision, recall, f-measure fractions
+\begin{enumerate}
+    \item Precision
+        \begin{equation}\label{eq:precision}
+              \textit{P} = \frac{\text{\# of relevant building retrieved images}}{\text{\# of total retrieved images}}
+        \end{equation}
+        
+    \item Recall
+        \begin{equation}\label{eq:recall}
+              \textit{R} = \frac{\text{\# of relevant building retrieved images}}{\text{\# of total relevant images}}
+        \end{equation}
+    \item F-Measure
+        \begin{equation}\label{eq:fmeasure}
+              \textit{F} = \frac{2\cdot P\cdot R}{P+R}
+        \end{equation}
+\end{enumerate}
+
+\textit{Precision} (Eq.~\ref{eq:precision}) is the number of \textit{relevant} retrieved images with respect to the total number of 
+retrieved images while \textit{Recall} (Eq.~\ref{eq:recall}) is the number of \textit{relevant} retrieved images with respect to the
+total number of corresponded available images of the same building.
+The \textit{F-Measure} (Eq.~\ref{eq:fmeasure})
+% is a metric of each subset's experiment accuracy and is defined as the weighted
+provides a weighted harmonic mean of the precision and recall of the experiment.
+In the following section~\ref{plots}, the F-Measure, declares the highest harmonic mean between Precision and Recall, in each threshold of inliers.
+
+We should note that each time the query image is removed from the results, as it is obviously returned with the highest score.
+%\textbf{TODO map fmeasure-best}
+
+We also present according to each subset of experiment in Sections \label{detection_exp1},\label{detection_exp2},\label{retrieval_exp1},\label{retrieval_exp2} the following types of figures:\\
+For the Detection Scenario in Section~\ref{detection_scenario}:\\
+\begin{itemize}
+    \item Figure with 6 sub-images for each one of the 6 buildings. Each image depicts the query(view) that gives the best F-Measure performance, providing in their sublabel the corresponding F-Measure and Precision value. (experiment 1)
+    \item Plot with the building id number versus the F-Measure value at each descriptor setting according to the peak inlier threshold. (experiment 1)
+    \item Bar plot at each descriptor setting according to the peak inlier threshold with the building id number versus the mean F-Measure value for overall of its queries. (experiment 2)
+
+\end{itemize}
+
+For the Retrieval Scenario in Section~\ref{retrieval_scenario}: \\
+\begin{itemize}
+    \item Plot with the building id number versus the mean Average Precision value at each descriptor setting according to the peak inlier threshold. (experiment 2)
+    \item Plot with 11 point Precision-Recall curve for all the results.  (experiments 1,2)
+    \item Bar plot at each descriptor setting according to the peak inlier threshold with the building id number versus the mean average Precision value for overall of its queries. (experiment 2)    
+
+\end{itemize}
+
+\begin{figure}[ht!] %exp1 building figures
+    \centering
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/3/3-1.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/3/3-2.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/3/3-3.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/3/3-4.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/3/3-5.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/3/3-6.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/3/3-7.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/3/3-8.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/3/3-9.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/3/3-9.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/3/3-11.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/3/3-12.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/3/3-13.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/3/3-14.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/3/3-15.jpg}}
+    
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/14/14-1.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/14/14-2.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/14/14-3.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/14/14-4.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/14/14-5.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/14/14-6.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/14/14-7.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/14/14-8.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/14/14-9.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/14/14-9.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/14/14-11.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/14/14-12.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/14/14-13.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/14/14-14.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/14/14-15.jpg}}
+    
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/16/16-1.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/16/16-2.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/16/16-3.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/16/16-4.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/16/16-5.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/16/16-6.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/16/16-7.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/16/16-8.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/16/16-9.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/16/16-9.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/16/16-11.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/16/16-12.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/16/16-13.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/16/16-14.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/16/16-15.jpg}}
+    
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/23/23-1.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/23/23-2.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/23/23-3.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/23/23-4.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/23/23-5.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/23/23-6.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/23/23-7.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/23/23-8.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/23/23-9.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/23/23-9.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/23/23-11.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/23/23-12.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/23/23-13.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/23/23-14.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/23/23-15.jpg}}
+    
+    \subfigure{\includegraphics[width=9mm]{attachments/images/single_house/41-1.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/single_house/41-2.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/single_house/41-3.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/single_house/41-4.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/single_house/41-5.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/single_house/41-6.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/single_house/41-7.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/single_house/41-8.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/single_house/41-9.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/single_house/41-9.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/single_house/41-11.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/single_house/41-12.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/single_house/41-13.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/single_house/41-14.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/single_house/41-15.jpg}}
+    
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/62/62-1.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/62/62-2.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/62/62-3.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/62/62-4.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/62/62-5.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/62/62-6.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/62/62-7.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/62/62-8.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/62/62-9.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/62/62-9.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/62/62-11.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/62/62-12.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/62/62-13.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/62/62-14.jpg}}
+    \subfigure{\includegraphics[width=9mm]{attachments/images/exp2_buildings/62/62-15.jpg}}
+     
+    \caption{The 1st subset consists of 6 buildings with 15 images each.}
+    \label{fig:exp2_seq}
+\end{figure}
+\newpage
+\begin{figure}[ht!] %exp2 building figures
+    \centering
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/1.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/2.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/3.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/4.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/5.jpg}}    
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/6.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/7.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/8.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/9.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/10.jpg}} 
+    
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/11.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/12.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/13.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/14.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/15.jpg}}    
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/16.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/17.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/18.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/19.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/20.jpg}}
+    
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/21.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/22.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/23.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/24.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/25.jpg}}    
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/26.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/27.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/28.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/29.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/30.jpg}}
+    
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/31.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/32.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/33.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/34.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/35.jpg}}    
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/36.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/37.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/38.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/39.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/40.jpg}}
+    
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/41.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/42.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/43.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/44.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/45.jpg}}    
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/46.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/47.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/48.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/49.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/50.jpg}}  
+    
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/51.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/52.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/53.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/54.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/55.jpg}}    
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/56.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/57.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/58.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/59.jpg}}
+    \subfigure{\includegraphics[width=10mm]{attachments/images/total_faces/60.jpg}}
+        
+
+    \caption{The 2nd subset consists of the front views from all 60 buildings.}
+    \label{fig:total_seq}
+\end{figure}
+
+	\newgeometry{
+		top=0.8in,
+		bottom=1.0in,
+		outer=0.7in,
+		inner=0.7in,
+		}  
+\section{Plots}\label{plots}
+%     We present the extensive evaluation protocol over the next section. 
+%     The two individual subsets of experiments are denoted as ``Experiment 1'' and ``Experiment 2'' in sections~\ref{exp1},~\ref{exp2} respectively.
+    This section presents the experimental results for both evaluation scenarios when applied to the Vyronas database.
+    \subsection{Detection Scenario}\label{detection_scenario} %% exp1    
+     \subsubsection{Experiment 1}\label{detection_exp1}
+     
+     Starting with the 1st experiment that uses as queries all the 15 views from 6 buildings.
+     Fig.~\ref{fig:exp1_sift_a} depicts the precision,recall and F-Measure
+     when the SIFT descriptor is used with the default parameters.It is clear that for each building the 15 views used as queries didn't provide the same performance.That is, some views are more capable in retrieving the relevant building images than others. Fig.~\ref{fig:exp1_sift(a)_f} shows for each building the query that provided the best performance in terms of F-Measure.
+	
+     	 \begin{figure}[hb!]
+              \centering
+              \includegraphics[scale=0.8]{attachments/plots/exp1/results/exp1_sift(a).png}
+              \caption{Precision, Recall, F-Measure plot lines for the $1^\text{st}$  experiment using the SIFT descriptor with default parameters.}
+              \label{fig:exp1_sift_a}
+         \end{figure}
+         \newpage
+	  
+% 	  \newgeometry{
+% 	      top=0.8in,
+% 	      bottom=1.0in,
+% 	      outer=0.7in,
+% 	      inner=0.7in,
+% 	      }	         
+    	    \begin{figure}[ht!] %exp1 building figures
+        		\centering
+        		\subfigure[\scriptsize{F-Measure: 0.667}]{\includegraphics[width=30mm]{attachments/plots/6subimages/exp1/sift(a)/3.jpg}}
+        		\subfigure[\scriptsize{F-Measure: 0.727}]{\includegraphics[width=30mm]{attachments/plots/6subimages/exp1/sift(a)/14.jpg}}
+        		\subfigure[\scriptsize{F-Measure: 0.667}]{\includegraphics[width=30mm]{attachments/plots/6subimages/exp1/sift(a)/16.jpg}}
+        		
+        		\subfigure[\scriptsize{F-Measure: 0.667}]{\includegraphics[width=30mm]{attachments/plots/6subimages/exp1/sift(a)/23.jpg}}
+        		\subfigure[\scriptsize{F-Measure: 0.727}]{\includegraphics[width=30mm]{attachments/plots/6subimages/exp1/sift(a)/41.jpg}}
+        		\subfigure[\scriptsize{F-Measure: 0.750}]{\includegraphics[width=30mm]{attachments/plots/6subimages/exp1/sift(a)/62.jpg}}
+        		\caption{The query that provided the best F-Measure results, for each one of the six buildings for the $1^\text{st}$  experiment using the SIFT descriptor with default parameters.}
+        		\label{fig:exp1_sift(a)_f}
+    	    \end{figure}
+    	    
+    	    In Figs.~\ref{fig:exp1_sift_b} and~\ref{fig:exp1_sift(b)_f} the same results are presented using SIFT descriptors with contrastThreshold$=$0.08. It can be seen that the best performance occurs for an inlier's threshold equal to 8 instead of 9 with a slightly lower F-Measure value, though. Comparing Figs.~\ref{fig:exp1_sift(a)_f} and~\ref{fig:exp1_sift(b)_f} we can see that only in two cases (i.e. building (d) and (f) ) the query providing the best results remains the same.
+    	    
+    	    \newpage
+    	    
+            \begin{figure}[ht!]	%SIFT1 b
+              \centering
+              \includegraphics[scale=0.8]{attachments/plots/exp1/results/exp1_sift(b).png}
+              \caption{Precision, Recall, F-Measure plot lines for the $1^\text{st}$  experiment using the SIFT descriptor with contrastThreshold$=$0.08.}
+              \label{fig:exp1_sift_b}
+            \end{figure}
+  
+    	    \begin{figure}[H] %exp1 6subimages sift
+        		\centering
+        		\subfigure[\scriptsize{F-Measure: 0.636}]{\includegraphics[width=30mm]{attachments/plots/6subimages/exp1/sift(b)/3.jpg}}
+        		\subfigure[\scriptsize{F-Measure: 0.621}]{\includegraphics[width=30mm]{attachments/plots/6subimages/exp1/sift(b)/14.jpg}}
+        		\subfigure[\scriptsize{F-Measure: 0.609}]{\includegraphics[width=30mm]{attachments/plots/6subimages/exp1/sift(b)/16.jpg}}
+        		
+        		\subfigure[\scriptsize{F-Measure: 0.560}]{\includegraphics[width=30mm]{attachments/plots/6subimages/exp1/sift(b)/23.jpg}}
+        		\subfigure[\scriptsize{F-Measure: 0.783}]{\includegraphics[width=30mm]{attachments/plots/6subimages/exp1/sift(b)/41.jpg}}
+        		\subfigure[\scriptsize{F-Measure: 0.621}]{\includegraphics[width=30mm]{attachments/plots/6subimages/exp1/sift(b)/62.jpg}}
+        		\caption{The query that provided the best F-Measure results, for each one of the six buildings for the $1^\text{st}$  experiment using the SIFT descriptor with contrastThreshold$=$0.08.}
+        		\label{fig:exp1_sift(b)_f}
+    	    \end{figure}
+	  \newpage
+	  
+	  We proceed likewise with the SURF descriptor. Fig.~\ref{fig:exp1_surf_a} depicts the precision, recall and F-measure in the default parameters. In Fig.~\ref{fig:exp1_surf(a)_f} it can be seen only the (b) and (d) building views are different comparing with the Fig.~\ref{fig:exp1_sift(a)_f} , while the (f) building remains the same with the highest F-Measure performance.
+	  \begin{figure}[ht!] %exp1 surfa
+	    \centering
+	    \includegraphics[scale=0.8]{attachments/plots/exp1/results/exp1_surf(a).png}
+	    \caption{Precision, Recall, F-Measure plot lines for the $1^\text{st}$  experiment using the SURF descriptor with default parameters.}
+	    \label{fig:exp1_surf_a}
+	  \end{figure}       
+	  \newpage
+	  \begin{figure}[ht!] %exp1 6subimage figures
+		  \centering
+		  \subfigure[\scriptsize{F-Measure: 0.667}]{\includegraphics[width=30mm]{attachments/plots/6subimages/exp1/surf(a)/3.jpg}}
+		  \subfigure[\scriptsize{F-Measure: 0.667}]{\includegraphics[width=30mm]{attachments/plots/6subimages/exp1/surf(a)/14.jpg}}
+		  \subfigure[\scriptsize{F-Measure: 0.600}]{\includegraphics[width=30mm]{attachments/plots/6subimages/exp1/surf(a)/16.jpg}}
+		  
+		  \subfigure[\scriptsize{F-Measure: 0.727}]{\includegraphics[width=30mm]{attachments/plots/6subimages/exp1/surf(a)/23.jpg}}
+		  \subfigure[\scriptsize{F-Measure: 0.783}]{\includegraphics[width=30mm]{attachments/plots/6subimages/exp1/surf(a)/41.jpg}}
+		  \subfigure[\scriptsize{F-Measure: 0.880}]{\includegraphics[width=30mm]{attachments/plots/6subimages/exp1/surf(a)/62.jpg}}
+		  \caption{The query that provided the best F-Measure results, for each one of the six buildings for the $1^\text{st}$  experiment using the SURF descriptor with default parameters.}
+		  \label{fig:exp1_surf(a)_f}
+	  \end{figure}
+	  
+	  In Figs.~\ref{fig:exp1_surf_b} and~\ref{fig:exp1_surf(b)_f} the same results are presented using SURF descriptor with the upright parameter enabled.
+	  It can be seen that the best performance occurs for an inlier’s threshold equal to 9 instead of 10 with a slightly lower F-Measure value, though. Comparing Figs.~\ref{fig:exp1_surf(a)_f} and~\ref{fig:exp1_surf(b)_f} we can see that only
+	  in three cases (i.e. buildings (b),(c) and (d)) the best view is different while there
+	  are two queries (i.e buildings (e) and (f)) with the highest F-Measure performance.
+	  \newpage
+	  
+	  \begin{figure}[ht!] %exp1 surfb
+	    \centering
+	    \includegraphics[scale=0.8]{attachments/plots/exp1/results/exp1_surf(b).png}
+	    \caption{The query that provided the best F-Measure results, for each one of the six buildings for the $1^\text{st}$ experiment using the SURF descriptor with the upright parameter enabled.}
+	    \label{fig:exp1_surf_b}
+	  \end{figure}
+
+	  \begin{figure}[H] 
+		  \centering
+		  \subfigure[\scriptsize{F-Measure: 0.636}]{\includegraphics[width=30mm]{attachments/plots/6subimages/exp1/surf(b)/3.jpg}}
+		  \subfigure[\scriptsize{F-Measure: 0.571}]{\includegraphics[width=30mm]{attachments/plots/6subimages/exp1/surf(b)/14.jpg}}
+		  \subfigure[\scriptsize{F-Measure: 0.696}]{\includegraphics[width=30mm]{attachments/plots/6subimages/exp1/surf(b)/16.jpg}}
+		  
+		  \subfigure[\scriptsize{F-Measure: 0.545}]{\includegraphics[width=30mm]{attachments/plots/6subimages/exp1/surf(b)/23.jpg}}
+		  \subfigure[\scriptsize{F-Measure: 0.783}]{\includegraphics[width=30mm]{attachments/plots/6subimages/exp1/surf(b)/41.jpg}}
+		  \subfigure[\scriptsize{F-Measure: 0.783}]{\includegraphics[width=30mm]{attachments/plots/6subimages/exp1/surf(b)/62.jpg}}
+		  \caption{The query that provided the best F-Measure results, for each one of the six buildings for the $1^\text{st}$  experiment using the SURF descriptor with the upright parameter enabled.}
+		  \label{fig:exp1_surf(b)_f}
+	      \end{figure}
+	    \newpage
+	    
+	    Fig.~\ref{fig:exp1_bestfm} summarizes the highest F-Measure values recorded for each one of the six buildings. It turns out that in most of the cases the default SURF features provide the best results. It is also evident that while in some cases (ie. buildings 3 and 41) the four variants of SIFT and SURF provide approximately similar results, there are other cases like building 62 where the choice of keypoint detector is critical with SURF providing substantially better results.
+	    \begin{figure}[ht!] %% exp1 fmeasure
+              \centering
+              \includegraphics[scale=0.9]{attachments/plots/exp1/fmeasure/bestfm.png}
+              \caption{Each point represents the query per building with the highest F-Measure value by the best inlier peak.}
+              \label{fig:exp1_bestfm}
+            \end{figure}
+      
+      \newpage
+      \subsubsection{Experiment 2}\label{detection_exp2} %%% detection - exp2 sift
+	Continuing with the 2nd experiment that uses as queries the front view from all the 60 buildings. Fig.~\ref{fig:exp2_sift_a} depicts the Precision, Recall and F-Measure when the SIFT descriptor is used with the default parameters.
+	Obviously,  the 60 views used as queries provide different performances. Figs.~\ref{fig:exp2_sifta_fm},~\ref{fig:exp2_siftb_fm} shows for each building the query the corresponed F-Measure performance for SIFT descriptor in default and tweaked values accordingly.
+	It is clear that also in Experiment 2, SIFT with default parameters measured in higher performance considering the Recall and F-Measure metric than in contrastThreshold setting, while it is slightly lower in Precision metric in inlier's threshold bellow 9. 
+      
+            \begin{figure}[hb!]
+              \centering
+              \includegraphics[scale=0.8]{attachments/plots/exp2/results/exp2_sift(a).png}
+              \caption{Precision, Recall, F-Measure plot lines for the $2^\text{nd}$ experiment using the SIFT descriptor with default parameters.}
+              \label{fig:exp2_sift_a}
+            \end{figure}  
+
+           \begin{figure}[ht!] %%% f measure sift
+              \centering
+              \includegraphics[scale=0.8]{attachments/plots/exp2/fmeasure/fmeasuresift(a).png}
+              \caption{F-Measure value performance, for the $2^\text{nd}$ experiment using SIFT descriptor in default setting.}
+              \label{fig:exp2_sifta_fm}
+            \end{figure}            
+        
+            \begin{figure}[H]
+              \centering
+              \includegraphics[scale=0.8]{attachments/plots/exp2/results/exp2_sift(b).png}
+              \caption{Precision, Recall, F-Measure plot lines for the $2^\text{nd}$ experiment using the SIFT descriptor with  ContrastThreshold=0.08.}
+              \label{fig:exp2_sift_b}
+            \end{figure}
+ 
+            \begin{figure}[H]
+              \centering
+              \includegraphics[scale=0.8]{attachments/plots/exp2/fmeasure/fmeasuresift(b).png}
+              \caption{F-Measure value performance, for the $2^\text{nd}$ experiment using SIFT descriptor with contrastThreshold=0.08.}
+              \label{fig:exp2_siftb_fm}
+            \end{figure}
+
+	 We proceed accordingly for the SURF descriptor. We can observe, in contrast to the experiment 1, that the (b) setting with upright enabled, performs better than the default setting. Comparing Figs.~\ref{fig:exp2_surf_a} and~\ref{fig:exp2_surf_b} the best performance occurs to the latest, along with the inlier's threshold equal to 11 instead of 10.
+	 
+            \begin{figure}[H]	%% detection - exp2 surf   
+              \centering
+              \includegraphics[scale=0.8]{attachments/plots/exp2/results/exp2_surf(a).png}
+              \caption{ Precision, Recall, F-Measure plot lines for the $2^\text{nd}$ experiment using SURF descriptor with default parameters.}
+              \label{fig:exp2_surf_a}
+	    \end{figure}
+           
+            \begin{figure}[H] %%% fmeasure surf %%%
+              \centering
+              \includegraphics[scale=0.8]{attachments/plots/exp2/fmeasure/fmeasuresurf(a).png}
+              \caption{F-Measure value performance for individual building for overall queries across the highest, using SURF descriptor in default setting.}
+              \label{fig:exp2_surfa_fm}
+            \end{figure}
+           
+            \begin{figure}[ht!]
+              \centering
+              \includegraphics[scale=0.8]{attachments/plots/exp2/results/exp2_surf(b).png}
+              \caption{ Precision, Recall, F-Measure plot lines for the $2^\text{nd}$ experiment, using SURF descriptor with upright parameter enabled.}
+              \label{fig:exp2_surf_b}
+            \end{figure} 
+            
+            \begin{figure}[H]
+              \centering
+              \includegraphics[scale=0.8]{attachments/plots/exp2/fmeasure/fmeasuresurf(b).png}
+              \caption{F-Measure value performance for individual building for overall queries across the highest using SURF descriptor with upright parameter enabled.}
+              \label{fig:exp2_surfb_fm}
+            \end{figure}            
+    \newpage
+    \subsection{Retrieval Scenario}\label{retrieval_scenario} %% retrieval_scenario
+    
+    In case of Retrieval Scenario, for experiment 1, Fig.~\ref{fig:exp1_bestmap} shows the mAP per building in each of descriptor settings. SIFT descriptor in contrastThreshold setting indicates the lowest results overall along with the inlier's threshold.
+    SIFT in default setting provides higher performance than SURF with upright enabled when both of them are measured in equal inlier's threshold.
+    Fig.~\ref{fig:exp1_elp} depicts the overall Precision vs Recall 11 points curve where the SURF in default settings performs rather higher in all spectrum in comparison with the remaining descriptors. It is clear that both of the descriptors in default settings perform better than the altered settings.
+
+    
+      \subsubsection{Experiment 1}\label{retrieval_exp1}
+ 
+	    \begin{figure}[ht!] %exp1 map
+              \centering
+              \includegraphics[scale=0.9]{attachments/plots/exp1/map/map.png}
+              \caption{Each point represents mean average precision value per house in the highest inliers peak in overall descriptor's performance.}
+              \label{fig:exp1_bestmap}
+	    \end{figure}            
+               \newpage 
+	    \begin{figure}[ht!] %exp1 map
+              \centering
+              \includegraphics[scale=0.9]{attachments/plots/exp1/elp/exp1_epr.png}
+              \caption{11 points Precision-Recall curve for 1st experiment subset.}
+              \label{fig:exp1_elp}
+	    \end{figure}
+      
+      \newpage
+      \subsubsection{Experiment 2}\label{retrieval_exp2}
+      
+      Following in experiment 2, a series of average precision plots are depicted for all queries
+      in each of any descriptor setting.
+      Closing with the 11 point Precision vs Recall curve, where the SURF with upright parameter enabled setting aside with SURF descriptor overall, measured with best performance.
+           \begin{figure}[ht!]  %%% map sift %%%
+              \centering
+              \includegraphics[scale=0.8]{attachments/plots/exp2/map/mapsift(a).png}
+              \caption{Average Precision value performance for individual building for overall queries across the highest of SIFT descriptor in default setting.}
+              \label{fig:exp2_sifta_map}
+            \end{figure}
+            \newpage
+            \begin{figure}[ht!]
+              \centering
+              \includegraphics[scale=0.8]{attachments/plots/exp2/map/mapsift(b).png}
+              \caption{Average Precision Measure value performance for individual building for overall queries across the highest of SIFT descriptor in contrastThreshold$=$0.08.}
+              \label{fig:exp2_siftb_map}
+            \end{figure} 
+            \begin{figure}[H]  %%% map surf %%%
+              \centering
+              \includegraphics[scale=0.8]{attachments/plots/exp2/map/mapsurf(a).png}
+              \caption{Average Precision value performance for individual building for overall queries across the highest of SURF descriptor in default setting.}
+              \label{fig:exp2_surfa_map}
+            \end{figure}
+            
+	    \begin{figure}[t!] %exp1 map
+              \centering
+              \includegraphics[scale=0.8]{attachments/plots/exp2/map/mapsurf(b).png}
+              \caption{Average Precision Measure value performance for individual building for overall queries across the highest of SURF descriptor in contrastThreshold$=$0.08.}
+              \label{fig:exp2_surfb_map}              
+	    \end{figure}
+	    
+            \begin{figure}[H]
+              \centering
+              \includegraphics[scale=0.9]{attachments/plots/exp2/elp/exp2_epr.png}
+              \caption{11 points Precision-Recall curve for 2nd experiment subset.}
+              \label{fig:exp1_bestmap}
+            \end{figure}
+
+      \subsection{Throughput Evaluation}     
+    	  
+    	  Closing the section of Vyronas database evaluation, we provide an series of throughput time tables in each of experiment, regarding the corresponded descriptor setting.
+    	  
+    	 \begin{table}[H]%% epx 1 sift bench
+              \centering 
+              \large\begin{tabular}{|c|c|c|}
+              \hline
+    		    \textbf{Subset} & \textbf{Total Throughput time} & \textbf{Mean Throughput time per query}\\ \hline	      
+            		(a) & $59577.50$s & $661.97$s \\ \hline
+            		(b) & $47104.00$s & $523.38$s \\ \cline{1-3}
+                \end{tabular}	      
+    	        \caption{Total and Mean throughput time for (a) and (b) subsets of parameters of SIFT descriptor in ``Experiment 1''}
+    	        \label{table:exp1_sift_bench}
+          \end{table} 
+          
+            
+	  \begin{table}[H]
+	      \centering
+	      \large\begin{tabular}{|c|c|c|}
+	      \hline
+		    \textbf{Subset} & \textbf{Total Throughput time} & \textbf{Mean Throughput time per query}\\ \hline	      
+		        (a) & $96900.00$s & $1076.67$s \\
+		        (b) & $41229.75$s & $458.11$s \\ \cline{1-3}
+	        \end{tabular}	      
+	        \caption{Total and Mean throughput time for (a) and (b) subsets of parameters of SURF descriptor in ``Experiment 1''}
+	        \label{table:exp1_surf_bench}
+	  \end{table}             
+      
+           \begin{table}[H] %% bench table exp2 sift
+                \centering
+                \large\begin{tabular}{|c|c|c|}
+                    \hline
+                    \textbf{Subset} & \textbf{Total Throughput time} & \textbf{Mean Throughput time per query}\\ \hline	      
+                    (a) & $46422.50$s & $515.81$s \\
+                    (b) & $28355.00$s & $315.06$s \\ \cline{1-3}
+                \end{tabular}	      
+                \caption{Total and Mean throughput time for (a) and (b) subsets of parameters of SIFT descriptor in ``Experiment 2''}
+                \label{table:exp2_sift_bench}
+            \end{table}
+
+            \begin{table}[H]
+                \centering
+                \large\begin{tabular}{|c|c|c|}
+                   \hline
+                    \textbf{Subset} & \textbf{Total Throughput time} & \textbf{Mean Throughput time per query}\\ \hline	      
+                    (a) & $49020.00$s & $817.00$s \\
+                    (b) & $38159.25$s & $635.99$s \\ \cline{1-3}
+                \end{tabular}	      
+                \caption{Total and Mean throughput time for (a) and (b) subsets of parameters of SURF descriptor in ``Experiment 2''}
+                \label{table:exp2_surf_bench}
+            \end{table}            
+
+    \newpage
+    
+   \section{Oxford Buildings}\label{oxfordsec}    
+   
+	One popular and widely used for performance evaluation
+    of detectors and descriptors is the standard Oxford dataset~\cite{oxford}.
+    The dataset consists of image sets with different geometric and photometric transformations (viewpoint change, scale change, image rotation, image blur, illumination change, and JPEG compression) 
+    and with different scene types (structured and textured scenes).
+	As an extend to our evaluation pool, we chose to add two subsets of 1000 and 5000 images each, from the oxford buildings dataset.
+	We use the scheme of experiments subset's as elaborated in Section~\ref{vyronas_db} and extended the database with the Oxford buildings dataset.
+	In order to eliminate redundant experiment cycles for time consuming purposes, we used  only the 
+	best proved subset of input parameters for each descriptor, through the evaluation process of the afforementioned subsets in Sections~\ref{retrieval_exp1},~\ref{retrieval_exp2}.
+	
+	Thus, in the next Sections~\ref{detection_scenario_ox},~\ref{retrieval_scenario_ox}, we present the aforementioned metrics	of Section~\ref{vyronas_db} for the following descriptor settings:
+
+      \begin{table}[H]
+	  \centering
+	  \large\begin{tabular}{|c|c|c|}
+	    \hline
+		  & SIFT & SURF\\ \hline				      
+	      Experiment 1 & \textbf{a} & \textbf{a} \\
+	      Experiment 2 & \textbf{a} & \textbf{b} \\ \cline{1-3}
+	  \end{tabular}	      
+	  \caption{Total and Mean throughput time for (a) and (b) subsets of parameters of SURF descriptor in ``Experiment 2''}
+	  \label{table:exp2_surf_bench}
+      \end{table}	
+         
+	We intentionally omitted the throughput time tables due to the very large number of dataset.
+	\newpage
+	\subsection{Detection Scenario}\label{detection_scenario_ox} %% retrieval_scenario
+	Starting with the applied afforementioned settings, we extract more discreet measurements,
+	for each case scenarios. Fig.~\ref{fig:oxf_exp1_sifta_1k} depicts the Precision, Recall and F-Measure
+	in 1k Oxford database when the SIFT descriptor is used in default settings and provided the highest
+	F-Measure in 9 inlier's threshold while in Fig.~\ref{fig:oxf_exp1_surfa_1k}, SURF descriptor provides the highest F-Measure in 10 along with a slightly higher performance.
+	
+	\subsubsection{Oxford 1K}\label{det_ox_1k}
+	
+		\begin{figure}[ht!]
+		    \centering
+		    \includegraphics[scale=0.8]{attachments/plots/exp3/1/results/exp3(1)_1k_sift(a).png}
+		    \caption{Precision, Recall, F-Measure plot lines for the $1^\text{st}$  experiment in Oxford 1k using the SIFT descriptor with default parameters.}
+		    \label{fig:oxf_exp1_sifta_1k}
+		\end{figure}
+		\newpage
+		\begin{figure}[ht!]
+		    \centering
+		    \includegraphics[scale=0.8]{attachments/plots/exp3/1/results/exp3(1)_1k_surf(a).png}
+		    \caption{Precision, Recall, F-Measure plot lines for the $1^\text{st}$  experiment in Oxford 1k using the SURF descriptor with default parameters.}
+		    \label{fig:oxf_exp1_surfa_1k}
+		\end{figure}		
+
+		\begin{figure}[H]
+		    \centering
+		    \includegraphics[scale=0.8]{attachments/plots/exp3/2/results/exp3(2)_1k_sift(a).png}
+		    \caption{Precision, Recall, F-Measure plot lines for the $2^\text{nd}$  experiment in Oxford 1k using the SIFT descriptor with default parameters.}
+		    \label{fig:exp3_sift_a1k}
+		\end{figure}
+		\begin{figure}[ht!]
+		    \centering
+		    \includegraphics[scale=0.8]{attachments/plots/exp3/2/results/exp3(2)_1k_surf(b).png}
+		    \caption{Precision, Recall, F-Measure plot lines for the $2^\text{nd}$ experiment in Oxford 1k using the SURF descriptor with upright enabled.}
+		    \label{fig:exp3_surf_b1k}
+		\end{figure}		
+
+		
+		\begin{figure}[H]
+		    \centering
+		    \includegraphics[scale=0.8]{attachments/plots/exp3/2/fmeasure/fmeasure_sift_1K.png}
+		    \caption{F-Measure mean value performance for individual building from overall queries, for the 2nd experiment in Oxford 1k buildings of SIFT descriptor in default settings.}
+		    \label{fig:oxf_exp2_fmeasure_sift_1k}
+		\end{figure}		
+		
+		\begin{figure}[H]
+		    \centering
+		    \includegraphics[scale=0.8]{attachments/plots/exp3/2/fmeasure/fmeasure_surf_1K.png}
+		    \caption{F-Measure mean value performance for individual building from overall queries, for the 2nd experiment in Oxford 1k buildings of SURF descriptor with
+		    upright parameter enabled.}
+		    \label{fig:oxf_exp2_fmeasure_surf_1k}
+		\end{figure}	
+	
+	\subsubsection{Oxford 5K}\label{det_ox_5k}
+		Following the same structure for the 5k Oxford database, for the case of the second experiment,
+		Fig.~\ref{fig:exp3_sift_a5k} the best F-Measure performance occurs for an inlier's threshold equal to 10 while in Fig.~\ref{fig:exp3_surf_b5k} SURF measured in 11 inlier's threshold along with one point of percentage higher.
+		\newpage
+		\begin{figure}[ht!]
+		    \centering
+		    \includegraphics[scale=0.8]{attachments/plots/exp3/1/results/exp3(1)_5k_sift(a).png}
+		    \caption{Precision, Recall, F-Measure plot lines for the $1^\text{st}$ experiment in Oxford 5k using the SIFT descriptor with default parameters.}
+		    \label{fig:oxf_exp1_sifta_1k}
+		\end{figure}
+		\begin{figure}[H]
+		    \centering
+		    \includegraphics[scale=0.8]{attachments/plots/exp3/1/results/exp3(1)_5k_surf(a).png}
+		    \caption{Precision, Recall, F-Measure plot lines for the $1^\text{st}$ experiment in Oxford 5k using the SURF descriptor with default parameters.}
+		    \label{fig:oxf_exp1_surfa_1k}
+		\end{figure}
+
+		\begin{figure}[H]
+		    \centering
+		    \includegraphics[scale=0.8]{attachments/plots/exp3/2/results/exp3(2)_5k_sift(a).png}
+		    \caption{Precision, Recall, F-Measure plot lines for the $2^\text{nd}$ experiment in Oxford 5k using the SIFT descriptor with default parameters.}
+		    \label{fig:exp3_sift_a5k}
+		\end{figure}
+		\begin{figure}[H]
+		    \centering
+		    \includegraphics[scale=0.8]{attachments/plots/exp3/2/results/exp3(2)_5k_surf(b).png}
+		    \caption{Precision, Recall, F-Measure plot lines for the $2^\text{nd}$ experiment in Oxford 5k using the SURF descriptor with upright parameter enabled.}
+		    \label{fig:exp3_surf_b5k}
+		\end{figure}		
+		
+		\begin{figure}[H]
+		    \centering
+		    \includegraphics[scale=0.8]{attachments/plots/exp3/2/fmeasure/fmeasure_sift_5K.png}
+		    \caption{F-Measure mean value performance for individual building from overall queries, for the 2nd experiment in Oxford 5k of SIFT descriptor with default settings.}
+		    \label{fig:oxf_exp2_fmeasure_sift_5k}
+		\end{figure}		
+
+		\begin{figure}[H]
+		    \centering
+		    \includegraphics[scale=0.8]{attachments/plots/exp3/2/fmeasure/fmeasure_surf_5K.png}
+		    \caption{F-Measure mean value performance for individual building from overall queries, for the 2nd experiment in Oxford 5k of SURF descriptor with upright enabled.}
+		    \label{fig:oxf_exp2_fmeasure_surf_5k}
+		\end{figure}
+		
+		An aggregate figure for both of oxford experiments in 1k and 5k depicting the highest F-Measure per building, is shown in Fig.~\ref{fig:oxf_exp1_fmeasure}.
+		Concerning the 1k, measurements keep a balance between the two descriptors.
+		While in 5k, SURF descriptor seem to outrun the SIFT.
+		\begin{figure}[H]
+		    \centering
+		    \includegraphics[scale=0.8]{attachments/plots/exp3/1/fmeasure/exp3(1)_fmeasure.png}
+		    \caption{Each point represents the query with the highest F-Measure value in the highest inliers peak in overall descriptor's performance for 1st subset of experiments in Oxford buildings.}
+		    \label{fig:oxf_exp1_fmeasure}
+		\end{figure}			
+      \newpage
+      \subsection{Retrieval Scenario}\label{retrieval_scenario_ox} %% retrieval_scenario
+      
+	In the case of retrieval scenario, studying Figs.~\ref{fig:oxf_exp1_epr_1k} and~\ref{fig:oxf_exp2_epr_1k}, it can be seen that for both of two experiments, SURF descriptor
+	outruns in all the Recall spectrum.
+	\subsubsection{Oxford 1K}\label{ret_ox_1k}
+	
+		\begin{figure}[ht!]
+		    \centering
+		    \includegraphics[scale=0.8]{attachments/plots/exp3/1/elp/exp3(1)_epr_1k.png}
+		    \caption{11 points Precision-Recall curve for 1st subset of experiments of Oxford 1K buildings.}
+		    \label{fig:oxf_exp1_epr_1k}
+		\end{figure}
+		\newpage
+		\begin{figure}[ht!]
+		    \centering
+		    \includegraphics[scale=0.8]{attachments/plots/exp3/2/elp/exp3(2)_epr_1k.png}
+		    \caption{11 points Precision-Recall curve for 2nd subset of experiments of Oxford 1K buildings.}
+		    \label{fig:oxf_exp2_epr_1k}
+		\end{figure}
+		
+		\begin{figure}[H]
+		    \centering
+		    \includegraphics[scale=0.8]{attachments/plots/exp3/2/map/mapsift_1K.png}
+		    \caption{Average Precision value performance for individual building for overall queries in 2nd subset of experiments in Oxford 1K of SIFT descriptor in default setting.}    
+		    \label{fig:oxf_exp2_map_sift_1k}
+		\end{figure}		
+	  
+		\begin{figure}[ht!]
+		    \centering
+		    \includegraphics[scale=0.8]{attachments/plots/exp3/2/map/mapsurf_1K.png}
+		    \caption{Average Precision value performance for individual building for overall queries    in 2nd subset of experiments in Oxford 1K of SURF descriptor with upright enabled.} 
+		    \label{fig:oxf_exp2_map_surf_1k}
+		\end{figure}		
+
+	\subsubsection{Oxford 5K}\label{ret_ox_5k}
+	
+		\begin{figure}[H]
+		    \centering
+		    \includegraphics[scale=0.8]{attachments/plots/exp3/1/elp/exp3(1)_epr_5k.png}
+		    \caption{11 points Precision-Recall curve for 1st subset of experiments of Oxford 5K buildings.}
+		    \label{fig:oxf_exp1_epr_5k}
+		\end{figure}
+
+		\begin{figure}[H]
+		    \centering
+		    \includegraphics[scale=0.8]{attachments/plots/exp3/2/elp/exp3(2)_epr_5k.png}
+		    \caption{11 points Precision-Recall curve for 2nd subset of experiments of Oxford 5K buildings.}
+		    \label{fig:oxf_exp2_epr_5k}
+		\end{figure}
+
+	      \begin{figure}[H]
+		  \centering
+		  \includegraphics[scale=0.8]{attachments/plots/exp3/2/map/mapsift_5K.png}
+		  \caption{Average Precision Measure value performance for individual building for overall queries across the highest of SIFT descriptor in default setting in 2nd subset of experiments for Oxford buildings.}
+		  \label{fig:oxf_exp2_map_sift_5k}
+	      \end{figure}		
+	
+	      \begin{figure}[ht!]
+		  \centering
+		  \includegraphics[scale=0.8]{attachments/plots/exp3/2/map/mapsurf_5K.png}
+		  \caption{Average Precision Measure value performance for individual building for overall queries across the highest of SURF descriptor with upright enabled setting in 2nd subset of experiments for Oxford buildings.}
+		  \label{fig:oxf_exp2_map_surf_5k}
+	      \end{figure}	
+	      
+	    \begin{figure}[H]
+		\centering
+		\includegraphics[scale=0.8]{attachments/plots/exp3/1/map/exp3(1)_map.png}
+		\caption{Each point represents mean average precision value per house in the highest inliers peak in overall descriptor's performance for 1st subset of experiments in Oxford buildings.}
+		\label{fig:oxf_exp1_map}
+	    \end{figure}
+
+\section{Discussion}\label{exp_discussion}
+We evaluated the aforementioned approaches using two individual settings of input values in both of the descriptors. We should mark that the experiments that used the Oxford dataset have been tackled similarly to the 1st and 2nd Experiment (Sections~\ref{detection_scenario},~\ref{retrieval_scenario}).
+%The results are obtained and summarized for section~\ref{exp1} (Experiment 1) in Figs.~\ref{fig:exp1_sift_a}-\ref{table:exp1_surf_bench} where is depicted the performance in mean Precision, Recall and F Measure metrics for each of the descriptor individual setting, a set of six sub images depicting the best performed query, two line plot figures with the best f measure performance at each building best query, in the top peak inlier threshold equally with a mean average precision plot.We close with throughput benchmark tables.
+%In section~\ref{exp2}(Experiment 2) Figs.~\ref{fig:exp1_sift_a},~\ref{table:exp2_surf_bench} depict the performance in mean Precision, Recall and F Measure metrics for each of the descriptor individual setting,  couple of bar plots in each individual setting the  .We close with throughput benchmark tables.
+
+For both cases of descriptors and for the 1st subset of experiments, we may observe that the default setting (setting ``a'')  of parameters, has led in higher performance in the Recall  and the F-Measure metrics. Also the peak value of the F-Measure used to select an appropriate inlier threshold was one rank higher compared to the setting ``(b)''. On the other hand, in terms of Precision, setting ``(b)'' has provided slightly increased values of the inlier threshold, for both descriptors.
+
+In the 2nd subset of experiments and for the case of SIFT features, we did not observe significant difference when compared to the 1st subset. Both settings of parameters have showed similar performance as in the 1st subset, slightly increased as the query images consisted from the best view of each building.
+  
+
+On the other hand SURF features, performed significantly different compared to the 1st subset concerning the Recall and F Measure metrics while the Precision line follows the same track.
+More specific the setting ``(b)'' of parameters, has led in higher performance in the Recall and F Measure metrics, along with the peak inlier value of F-Measure in one higher rank.
+In addition this setting proved the best in this 2nd subset combining fine performance, high peak inlier threshold and throughput time as shown in Figs.~\ref{table:exp2_sift_bench},\ref{table:exp2_surf_bench} among not only the ``(a)'' setting but with SIFT descriptor too, which is remarkable.
+
+
+In Tables~\ref{table:exp1_sift_bench}, \ref{table:exp1_surf_bench}, \ref{table:exp2_sift_bench} and \ref{table:exp2_surf_bench}, is measured the overall throughput time in each of experiment subset respectively.
+As expected, the throughput time is much less in the ``(b)'' setting of parameters in any set of experiments for both of the descriptors refering to the Section~\ref{evaluation}.
+
+In addition, in Section~\ref{evaluation} we provide the rest of the plots accordingly.
+For the first case of experiments we illustrate them in Figs.~\ref{fig:exp1_bestfm} and \ref{fig:exp1_bestmap} the highest F Measure value and the highest mean average Precision value, of a certain query per building at each peak inlier threshold, accordingly.
+According to the Fig.~\ref{fig:exp1_bestfm}, SIFT descriptor in ``(b)'' setting is observed in the most stable performance around 0.6 percent among all the others while SURF in ``(a)'' setting provides the highest performance.
+When in the other hand in Fig.~\ref{fig:exp1_bestmap} SIFT  in ``(a)'' setting provides great stability in high performance concerning the Precision.
+We should note the the escalation of the rank in inlier in each descriptor has not much affected the performance in F Measure but for the case of mAP the escalation between the same descriptor are really rapid.
+
+As for the second case of experiments the results are depicted in Figs.~\ref{fig:exp2_sifta_fm}-\ref{fig:exp2_siftb_map} and \ref{fig:exp2_surfa_fm}-\ref{fig:exp2_surfb_map} we observe higher performance in ``(a)'' setting of SIFT descriptor while in SURF we did not observe significant differences besides the ``(b)'' setting, where a cut-off encounters with the lowest performance buildings where one does not satisfies at all the inlier threshold.
+  
+% As it has been previously mentioned, we have also implemented a web platform, which shall be described in detail in the next section~\ref{web}. Using the platform presented in Chapter~\ref{web} and more specifically its ``offline'' section, one may easily reproduce the aforementioned experiments. To tune the platform so as to increase user experience, in terms of ``optimizing'' the returned results, we have used the aforementioned conclusions, to select descriptor settings and an appropriate value of the inlier threshold, for the case of detection.
+% % Of course, since experiments have already been offline executed, we chose settings that maximize performance,
+% Moreover, since the experiments have been performed offline, the settings that maximize performance are applied, although they required more execution time. On the other hand and for the ``online'' section, i.e., the one that users are allowed to upload their own images, real time experiments take place, thus the faster (in terms of execution time) setting has been adopted.
+
+
+In terms of performance of SIFT versus the SURF descriptors, the latest descriptor produced higher marks in percentages in Recall an F Measure metrics. While SIFT algorithm was able to perform slightly higher in Precision in the middle to lowest inlier threshold values while it can be considered rather faster in respective settings, in throughput time.
+  
+Finally, SURF descriptor can be considered a better option than SIFT, in applications where the visually expected retrieved image can be placed around the same visually expected neighborhood of features as the query image image, observing the results
+in the Recall and F Measure metrics.
+On the other hand SIFT descriptor can be considered as a better option in cases where
+the retrieved results will not be near to the neighborhood of visually expected.
+
+This conclusion is evaluated in Sec.~\ref{oxfordsec} in a larger dataset, where we used the referenced one and contaminated it with 1000 and 5000 oxford buildings images.
+Relating to Oxford experiments, we chose to use, in terms of coherence and due to time consuming experiments, the best setting of parameters of the afforemented discussion.
+Both of the descriptors have proven significantly robust, despite the increase of the ``noise'' data. As it was expected for the SIFT we can observe fine and distinct performance versus SURF in Precision metric while in addition note the peak value in a lower inlier threshold in F Measure.
+SURF provides higher performance values in Recall while it its peak value in F Measure measured in two ranks greater than SIFT. (e.g. Figs.~\ref{fig:exp3_sift_a1k},~\ref{fig:exp3_surf_b1k}, SIFT inlier's threshold best F-Measure is equal to 9 and 0.55 out of 1 while SURF inlier's threshold best F-Measure is equal to 11 and 0.62 out of 1.)
+% We should note that the differences between the 1K and 5K sections stands only in the SURF features that seems 
+
+% Closing, both of descriptors have proven reliable in every aspect of experiments.	    

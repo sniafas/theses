@@ -1,0 +1,30 @@
+\chapter{Introduction}
+\section{Motivation}
+The digital revolution has brought revolutionary changes to many aspects of everyday life. Amongst them, of significant importance are digital cameras, which nowadays have also been integrated to personal computers, smartphones, tablets etc., thus have become interdependent to many daily activities. Accordingly, extremely large amounts of digital multimedia content are being produced every moment and even shared within the WWW.
+
+During the last two decades, the research fields of digital image processing and computer vision have benefited the most from the aforementioned facts and many new research areas have arisen. Amongst them, we could mention multimedia analysis, indexing and retrieval, feature extraction and matching, content representation classification, detection and recognition etc.
+
+Image retrieval consists of the problem of searching for digital images in large databases. Related research can be classified into two types: text-based image retrieval and content-based image retrieval~\cite{rui1999image}. Text-based image retrieval refers to an image retrieval framework, where images first are annotated manually and text-based Database Management Systems (DBMS) are utilized to perform the retrieval. In response to the rapid increase of the size of image collection, the amount of labor which required for manual annotation was exacerbated while the human perception was subjected to difficulties in order to percieve image discrimination.
+
+In order to overcome these difficulties, Content-Based Image Retrieval (CBIR)~\cite{gudivada1995content} or Query By Image Content (QBIC)~\cite{flickner1995query} has been proposed. In CBIR, images are automatically annotated with their own visual content by feature extraction process.
+
+The problem addressed in this thesis is building recognition in urban environments. We may formulate this problem more formally as: ``Given a query image of a specific building, retrieve all images depicting the same building, from a given database.'' Building recognition is motivated by several applications, amongst which we should mention real-time robot localization  and visual navigation~\cite{se2002mobile}, architectural design~\cite{kato1992database}, 3D city reconstruction~\cite{agarwal2009building} and visualization~\cite{glander2009abstract}.
+
+In this work we choose to tackle the aforementioned problem as a typical visual retrieval approach. We shall follow the generic approach of content-based image retrieval, however we will adapt it to the special needs of the given problem and the issues that may arise. More specifically, let us consider two typical photos depicting the same building. Even a small change in viewpoint corresponds to a geometric transformation and may cause severe variations in the visual content. Similarly, when the lighting conditions change (e.g., photos taken during the day vs. photos taken during the night), visual content changes more dramatically. Should we consider typical photos taken within an urban environment, partial occlusion (e.g., due to pedestrians, vehicles etc.) may also distort the visual content.  Of course, in real-life cases, the aforementioned issues may arise simultaneously. 
+
+Thus, it is crucial to select and apply techniques that would be able to overcome these difficulties. These techniques should extract features that are robust to the aforementioned problems, i.e. viewpoint variations, illumination changes and partial occlusions. These features should match in a way that a high matching score would be provided, given two images depicting the same building and a low one, given any two other images. There exist several techniques that comply to these limitations. We shall analyze them in Section~\ref{features}.
+
+The building recognition application that we propose and develop within this thesis consists of feature extraction, representation, matching and selection. This way we calculate a matching score between any two given images and we are able to create and evaluate a retrieval scheme. We also build a web application, which in brief provides the following functionalities:
+\begin{itemize}
+    \item Features offline experimental results querying frontal views of random buildings from the database with the selected image descriptor.
+    \item Features online experiments where the user can query between a random pair of images from the provided database, or can upload/select an image
+    to/from the user defined database to query with frontal building views in the available dataset.
+\end{itemize}
+
+For the sake of the evaluation, we also introduce a new dataset consisting of 60 buildings taken in the urban area of Vyronas, Athens, Greece. Photos have been taken for each building for a predefined set of angles and also for different lighting conditions. Upon the completion and presentation of this thesis, we plan to make this dataset public to the research community. Using this dataset we perform an extensive evaluation of the selected techniques, using appropriately selected measures and discuss the results.
+ 
+\section{Structure}
+The remaining of this thesis is structured as follows:
+In Chapter~\ref{features} we introducing feature extraction techniques that are utilized in our methodology along with other popular feature extraction methods. Following, Chapter~\ref{matching}  elaborates with the matching techniques along with the matching and homography estimation method. We continue in Chapter~\ref{experiments} where we present our evaluation protocol and methodology presenting an extensive set of figures depicting
+the entire behavior of our platform. In Chapter~\ref{web} we implemented a fully functional web platform for the shake of a more intergrated experience through the evaluation and experiment process.
+Finally, in Chapter~\ref{conclusions} we present the conclusions as well as a discussion on future extensions of the present work.

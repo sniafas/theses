@@ -1,0 +1,116 @@
+\chapter{Matching}\label{matching}
+
+
+\section{Introduction}
+
+Image matching can be applied to number of applications that require the functionality of identifying and searching of matching images. 
+Major challenges for matching images can be considered the illumination variation, viewpoint change or the scale differences that may cause decorrelation between the images. 
+Given a set of interest points  extracted from all images, the goal of the matching stage is to find geometrically consistent feature matches between all images through a defined process which is elaborated extensively in the following Section~\ref{imgmatching}. 
+Matching process extracts a large number of salient (tentative) points, that is considered as noise and have to be eliminated.
+Statistically robust methods like RANSAC applies geometric constraints while is able to select the best model in presence of noise, i.e., the outliers.
+% This proceeds as follows.
+% First, we find a set of candidate feature matches using an approximate nearest neighbour algorithm. Then we are fine matches using an outlier rejection procedure based on the noise statistics of correct/incorrect matches.
+
+
+\section{Keypoint matching principles}\label{imgmatching}
+
+Feature matching, 
+%or more generally ``image matching'',
+plays an important role in many computer vision
+applications such as image registration, camera calibration and object recognition, and denotes the task of establishing correspondences between two images of the same
+scene/object. A common approach to image matching consists of detecting a set of interest points each associated with image descriptors from image data. Once the features and their descriptors have been extracted from two or more images, the next step is to establish some preliminary feature matches between these images as illustrated in Fig.~\ref{fig:bf_matches}.
+A match between the pair of interest points $(p, q)$ is accepted only if (i) $p$ is the best match for $q$ in relation to all the other points in the first image and (ii) $q$ is the best match for $p$ in relation to all the other points in the second image. In this context, it is very important to devise an efficient algorithm to perform this
+matching process as quickly as possible. The nearest-neighbor matching in the feature
+space of the image descriptors in Euclidean norm can be used for matching vector-based features. 
+
+However, in practice, the optimal nearest neighbor algorithm and its
+parameters depend on the dataset characteristics. Furthermore, to suppress matching candidates for which the correspondence may be regarded as ambiguous, the ratio
+between the distances to the nearest and the next nearest image descriptor is required to be less than some threshold. In our case the ratio of 0.75 has been chosen.
+The typical solution in the case of our system which establishes matching in a large dataset is to replace the linear search with an approximate matching algorithm that can offer speedups of several
+orders of magnitude over the linear search. This is, at the cost that some of the nearest neighbors returned are approximate neighbors, but usually close in distance to the
+exact neighbors.
+Generally, the performance of matching methods based on interest points depends
+on both the properties of the underlying interest points and the choice of associated
+image descriptors. Furthermore, selecting a detector and a descriptor that addresses the image degradation
+is very important. 
+
+\begin{figure}[htp!]
+  \centering
+  \includegraphics[scale=0.3]{attachments/images/ransac/bf_match.jpg}
+  \caption{Tentative correspondences between SIFT descriptors}
+  \label{fig:bf_matches}
+\end{figure}
+
+For example, if there is no scale change present, a corner detector
+that does not handle scale is highly desirable; while, if image contains a higher level
+of distortion, such as scale and rotation, the more computationally intensive SURF feature detector and descriptor is a adequate choice in that case~\cite{hassaballah2016image}.
+In the area of feature matching, it must be noticed that the binary descriptors (e.g., FREAK or MSER) are generally faster and typically used for finding point correspondences
+between images, but they are less accurate than vector-based descriptors~\cite{figat2014performance}. Statistically robust methods like RANSAC can be used to filter outliers in matched feature
+sets while estimating the geometric transformation or fundamental matrix, which is useful in feature matching for image registration and object recognition applications and we will discuss in the next section.
+
+
+
+\section{The RANSAC algorithm}
+In Figs.~7(a),~7(b) we illustrated a pair of images depicting the same building under two different viewpoints and the sets of keypoints extracted from each. Upon careful investigation of these points, we argue that a human observer may easily identify some point correspondences, i.e., keypoints that are extracted from the same part of the scene, while in most practical cases, partially due to the huge number  of features, it is tedious to identify the set of all correspondences. Obviously, in some cases it is not even feasible.
+
+    \begin{figure}[htp!]
+        \centering
+        \subfigure[]{\label{fig:view1}\includegraphics[width=60mm]{attachments/images/ransac/view1.jpg}}
+        \subfigure[]{\label{fig:view2}\includegraphics[width=60mm]{attachments/images/ransac/view2.jpg}}
+        \caption{Query images depicting the same building from two different viewpoints.}
+        \label{fig:demo_features}
+    \end{figure}
+    
+Let us consider the case of slowly moving camera, that continuously captures photos. In this sequence of photos we would observe that  a) they
+would contain several similar visual features; and b) some of these
+features (ideally a large subset) seems to ``move'' in the same way, i.e., they follow the same geometric transformation. We shall call these features will be denoted as the ``inliers'' of the feature set as shown in Fig. \ref{fig:inliers}. On the contrary, the remaining features will be called ``outliers.'' We expect that a pair of images that depict the same building should contain a large number of inliers, while a pair that would depict a different building would contain mainly outliers. We should note that both inlier and outlier pairs are composed by visually similar keypoints.
+
+\begin{figure}[htp!]
+  \centering
+  \includegraphics[scale=0.3]{attachments/pictures/inliers.png}
+  \caption{Similar visual features which follow the line of the same geometric transformation, denoted as ``inliers''.}
+  \label{fig:inliers}
+\end{figure}
+
+For the estimation and maximization of the set of inliers, one could apply e.g., a brute force method. However such methods are not computationally efficient in terms of time needed. We choose to use the RANdom SAmple Consensus (RANSAC) algorithm~\cite{fischler1981random}. RANSAC is able to select the best model in presence of noise, i.e., the outliers. Strictly speaking, the best model is selected by a probability $P_R$ (user-defined), which is typically set to be approx. to 1. A small value of $P_R$ leads to smaller processing time, however, the extracted model may not be close to the optimal. A large value of $P_R$ ``guarantees'' that the extracted model should be the optimal or close to the optimal.
+
+In our case, the model we wish to extract using RANSAC is the geometric transformation between keypoints. 
+%(thus and of keypoints since they are also pixels of the image). 
+Thus, inliers are visually matching features between
+consecutively images that follow this transformation 
+%while outliers are visually matching features that do not follow this transformation.
+while the remaining of them are considered as outliers.
+A homography~\cite{hartley2003multiple} is a perspective transform that maps any given point $x_i$ of a given image to a corresponding point $x_i'$ of another. Given the set of correspondences of points of interest between two consecutive frames, i.e. the pairs $x_i\leftrightarrow x_i'$ , we are able to define the homography matrix $H$ as: $x_i' = H\cdot x_i$.
+
+The estimation of an image transformation using RANSAC originates from the task of stereoscopic camera calibration~\cite{hartley2003multiple}, where the images captured by two cameras typically (i.e., in the cases of most stereoscopic cameras as shown if Fig. \ref{fig:stereo}) differ only by means of a perspective transform. This quite simple idea has been extended. In our approach, instead of two images taken by a stereoscopic camera system, we consider the case of a single camera system moving slowly. This way approximately the same ``scene'' is captured, however by a slightly different viewpoint. When the variation of the viewpoint is not very high a small number of false correspondences is typically expected.  However, in our case, many false correspondences are often introduced due to the equipment, e.g. noise, or the compression, e.g., JPEG artifacts and also similarities on the details between different buildings.
+
+\begin{figure}[htp!]
+  \centering
+  \includegraphics[scale=0.5]{attachments/pictures/stereo.png}
+  \caption{Images captured by a stereoscopic camera can easily considered as two different views of the same object.}
+  \label{fig:stereo}
+\end{figure}
+
+
+The aforementioned observations come to justify the choice of RANSAC within the herein presented approach. RANSAC is well-known for its ability to correctly extract an estimated model, even in the presence of a large number of outliers (noise). To clarify things, we describe the approach of RANSAC in this work and for a pair of images:
+
+\begin{enumerate}
+    \item We select invariant keypoints/regions and extract appropriate
+    visual descriptors from each image.
+    \item We then extract a set of visually matching points/regions. These would be referred to as ``tentative matches''. Similarity is calculated using an appropriate distance function for each descriptor and a predefined threshold $T_c$. We attempt to improve quality of matches, by adopting the nearest neighbor ratio strategy~\cite{hartley2003multiple}. This way a tentative match is used only if the nearest neighbors of keypoints in both images also match (i.e., are also tentative matches). We should note herein that the location of these points is not taken into account within this matching strategy
+    and also that a given point of a frame may match to more than one points of the other frame.
+    \item After a predefined number of trials, RANSAC selects the largest subset of the aforementioned tentative matches that conform to the same geometric transformation, i.e, to the same homography $H$. At each trial RANSAC randomly selects a quadruplet of points (since homographies may be described using exactly 4 points) and then identifies the tentative matches that support the corresponding transformation. The goal is to select the largest such subset, at the end of the trials. We should note that this subset is optimal with the aforementioned (user-defined) probability $P_R$ and denotes the set of inliers. Thus, the remaining matches are considered to be the outliers. 
+\end{enumerate}
+
+This way we exploit the main advantage of the RANSAC algorithm, which is its ability to select the optimal model in the presence of a significantly large number of outliers, without a brute-force (extensive) matching approach. We should emphasize that RANSAC relies a lot on the tentative correspondences that consist of its input and the accuracy of the selected model on the user-defined probability $P_R$. It is common to select a significantly large value of probability $P_R$ , thus leading to results that are as accurate as possible.
+
+In Fig.~\ref{fig:bf_matches} we illustrate a visual example of the tentative correspondences between the SIFT descriptor of the two images of Fig.~\ref{fig:demo_features}. We should observe that a) their number is significantly larger compared to the number of inliers, illustrated in Fig.~\ref{fig:sift_matches}; and b) the selection of the set of inliers is not a trivial task for the human observer. %however in some cases it is obvious to extract a subset of them.
+
+Fig.~\ref{fig:sift_matches} illustrates both images from Fig.~\ref{fig:demo_features}, where the centers of the strongest interest features identified as inliers are depicted with green dots.Correspondences between inliers are drawn in purple lines while the rest of the unmatched features are depicted with red marks. Upon careful observation, one should easily spot correspondences between features.
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[scale=0.4]{attachments/images/ransac/sift_match.jpg}
+  \caption{Correspondences between the query image (left) and a similar image (right). Local (SIFT) features identified as inliers are depicted in green dots. Correspondences between inliers are drawn in purple lines.}
+  \label{fig:sift_matches}
+\end{figure}

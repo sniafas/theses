@@ -1,0 +1,123 @@
+\documentclass[a4paper,12pt,twoside]{report}
+
+%\usepackage{textcomp}
+% FONTS
+\usepackage[utf8x]{inputenc}
+\usepackage[greek,english]{babel}
+
+% package to handle graphics
+\usepackage{graphicx,subfigure}
+% package to handle multiple figures in a minipage
+\usepackage{subfigure}
+% package to extend math capabilities
+\usepackage{mathtools}
+\usepackage{amsmath}
+\usepackage{chngcntr}
+%\usepackage{amsmath,amssymb}
+%package to activate XeTeX font manager
+
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{subfloat}
+\usepackage{rotating}
+\usepackage{hhline}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{enumerate}
+\usepackage{setspace}
+
+\onehalfspacing
+\usepackage[margin = 2cm]{geometry}
+
+%\parindent=0in  % Ενεργοποιήστε την ακόλουθη γραμμή αν δεν θέλετε στοίχιση στις νέες παραγράφους.
+
+
+% HEADINGS
+%\usepackage{sectsty} 
+\usepackage[normalem]{ulem} 
+
+\usepackage{url}
+\usepackage{fancybox}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+
+\renewcommand{\labelitemii}{$\bullet$}
+\counterwithout{figure}{chapter}
+\counterwithout{table}{chapter}
+\setcounter{secnumdepth}{3}
+
+\begin{document}
+
+    \noindent
+    \begin{minipage}[c]{0.2\textwidth}    %% b or t, default is c
+        \includegraphics[height=4\baselineskip]{attachments/pictures/athens-logo.jpg}
+    \end{minipage}%
+    \begin{minipage}[c][2cm]{0.6\textwidth}
+        \centering\bfseries\large
+        \textsc{\Large MASTER ISICG/TIM }  \vfill
+    \end{minipage}%
+    \begin{minipage}[c]{0.1\textwidth}
+        \includegraphics[height=2\baselineskip]{attachments/pictures/unilim-logo.png}
+    \end{minipage}
+  
+
+    \begin{center}
+        
+        \vspace*{1.5cm}
+
+        \textsc{\Large\textbf{ \textgreek{ Πληροφορική, Σύνθεση Εικόνων, Σχεδιασμός Γραφικών, Τεχνολογίες Διαδικτύου και Πολυμέσων} }} \\
+        
+        \vspace*{0.5cm}
+        
+        \textsc{\Large\textbf{Informatique, Synthèse d'Images, Conception Graphique, Technologies d’Internet et de Multimédia}} 
+    
+        \vspace*{4cm}
+
+        \textsc{\LARGE\textbf{\textit{ Image Retrieval Platform for building recognition in urban environments} }} \\
+        
+        \vspace*{0.5cm}
+        \textsc{\large\textbf{ \textit{Stavros N. Niafas}  }} \\
+   
+        \vspace*{3cm}
+        
+        \textsc{\large\textbf{Supervisor}}\\ 
+        \textsc{\large Assoc. Prof. Anastasios Kesidis
+	} 
+  
+        \vspace*{7cm}
+    
+        \textsc{\normalsize{Athens 2016}} 
+    
+    \end{center}
+
+    \thispagestyle{empty}
+
+    \newgeometry{
+        top=1.5in,
+        bottom=1.5in,
+        outer=1in,
+        inner=1in,
+    }
+
+
+\thispagestyle{empty}
+
+
+
+\tableofcontents
+\listoffigures
+\listoftables
+
+\include{abstract}
+\include{intro}
+\include{methodology}
+\include{ransac}
+\include{experiments}
+\include{web_platform}
+% \include{discussion}
+\include{conclusions}
+
+\bibliography{docBib}
+\bibliographystyle{plain}
+\end{document}

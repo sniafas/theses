@@ -1,0 +1,201 @@
+\chapter{Feature Extraction}\label{features}
+
+\section{Introduction}
+
+In this chapter we describe local feature extraction techniques that are utilized in our framework along with other popular feature extraction methods. Within our framework, interest points are automatically detected from an image. Then, feature vectors are computed at predefined neighborhoods of these interest points. In the search step, each of the feature vectors extracted from a query image votes scores to matched reference features whose feature vectors are similar to the query feature vector. Our local feature-based image retrieval system involves in two important processes: local feature extraction and image representation. In local feature extraction, certain local features are extracted from an image. And then, in image representation, these local features are integrated or aggregated into a vector representation in order to calculate similarity between images.
+Following, we present an example of these representations, in each of the image descriptor methods in discreet coloured figures.
+%along with image matching results which we investigate thoroughly in Section~\ref{matching}.
+
+\section{Image description by visual features}\label{descriptors}
+Typically, the first step in the majority of image-related computer vision problems is the extraction of a set of visual features, which shall be used for the representation of the visual content that is depicted in the image that will be processed and/or analyzed. Simple problems may be easily tackled by extracting either global (i.e., from the whole image), or local (i.e. from image patches). In the first case a description extraction scheme considers all image pixels and features a \textit{single} vector that describes the whole image. In the latter, descriptions are extracted from image regions (patches, i.e., subsets of the whole image's pixels), that are defined either manually e.g., by imposing a grid or automatically e.g., by a segmentation or a clustering process. Although the extraction using either of these approaches has been proven effective in tasks such as global image classification~\cite{chapelle1999support}, and visual concept detection~\cite{spyrou2009concept}, there exist several reasons for which they are not appropriate for the problem at hand.
+
+First of all, global features are prone to serious changes, due to e.g. small changes of viewpoint, zooming, changes of illumination, contrast, etc. In Fig.~\ref{fig:building_seq} we present a set of photos similar to those of the dataset which shall be used in our experiments. The same building is depicted in all these photos, however we have on purpose caused the aforementioned changes, which as it can been clearly seen cause serious changes to the visual content. Although one may argue that a human observer may still be able to recognize the building into all these photos, it is obvious that a global descriptor may easily fail, since the visual content of the images changes dramatically, which affects the extracted features.
+
+
+While almost the same stand for local features, these also face an additional problem, which is the way patches are extracted. The most trivial way to extract image patches is by imposing a rectangular grid~\cite{kasutani2001mpeg}. Then, each cell of this grid is a patch, used for feature extraction. Obviously, this approach is naive since even the smallest effects of viewpoint change (e.g., small horizontal translation of the photographer) may dramatically change the content of each grid. A more advanced approach is to apply a segmentation or pixel clustering algorithm and extract a description from each segment/cluster~\cite{spyrou2009concept}. However, it is well-known that image segmentation remains still an unsolved problem and valid solutions always require a set of retreats in the process. Thus it is possible that patches which have resulted  upon such a process and from two different viewpoints of the same scene may be significantly different in terms of e.g., shape, size and even visual content. 
+
+To successfully overcome such issues, in this thesis, we choose to work on an approach that is based on extracted \textit{interest} (salient) points/keypoints. These points are locally extracted from images using algorithms that are robust to several transformations, illumination changes and contrast. Typically, these algorithms are divided into two parts. The first part extracts a set of keypoints, along with a region that surrounds them. The second part extracts a description of the visual properties of this region. The goal of these algorithms is to provide the same keypoints even under several distortions as the aforementioned. In practice, this is
+%does not happen,
+partially achieved, however a subset of the points, between the two images do actually match thus using an appropriate keypoint selection and matching strategy. 
+This subset is adequate to provide a similarity/dissimilarity measure. We should note that the problem at hand is tackled herein with the following variations:
+\begin{itemize}
+    \item a \textit{detection} problem: given a query the system should return a ranked list of all relevant photos, i.e., those depicting the same building
+    \item a \textit{retrieval} problem: given a query, the system should return a ranked list of all photos of the database
+\end{itemize}
+
+\begin{figure}
+    \centering
+    \subfigure{\includegraphics[width=20mm]{attachments/images/single_house/41-1.jpg}}
+    \subfigure{\includegraphics[width=20mm]{attachments/images/single_house/41-2.jpg}}
+    \subfigure{\includegraphics[width=20mm]{attachments/images/single_house/41-3.jpg}}
+    \subfigure{\includegraphics[width=20mm]{attachments/images/single_house/41-4.jpg}}
+    \subfigure{\includegraphics[width=20mm]{attachments/images/single_house/41-5.jpg}}
+    
+    \subfigure{\includegraphics[width=20mm]{attachments/images/single_house/41-6.jpg}}
+    \subfigure{\includegraphics[width=20mm]{attachments/images/single_house/41-7.jpg}}
+    \subfigure{\includegraphics[width=20mm]{attachments/images/single_house/41-8.jpg}}
+    \subfigure{\includegraphics[width=20mm]{attachments/images/single_house/41-9.jpg}}
+    \subfigure{\includegraphics[width=20mm]{attachments/images/single_house/41-10.jpg}}
+    
+    \subfigure{\includegraphics[width=20mm]{attachments/images/single_house/41-11.jpg}}
+    \subfigure{\includegraphics[width=20mm]{attachments/images/single_house/41-12.jpg}}
+    \subfigure{\includegraphics[width=20mm]{attachments/images/single_house/41-13.jpg}}
+    \subfigure{\includegraphics[width=20mm]{attachments/images/single_house/41-14.jpg}}
+    \subfigure{\includegraphics[width=20mm]{attachments/images/single_house/41-15.jpg}}
+     
+    \caption{Images of the same building depicting several changes in viewpoint, zooming, illumination and contrast.}
+    \label{fig:building_seq}
+\end{figure}
+
+%In the remaining of this Section we shall describe in detail two interest point extraction approaches
+In the following we describe several keypoint detection approaches paying more attention to the Scale Invariant Feature Transform (SIFT) and the Speeded-Up Robust Features (SURF). We also provide a discussion on the advantages and disadvantages of each method, which will be further demonstrated in Section~\ref{experiments} of the experimental results.
+%which shall also be demonstrated in Section~\ref{experiments} which describes the experiments performed and the results achieved.
+
+\section{The SIFT descriptor}
+
+
+The Scale-Invariant Feature Transform (SIFT)~\cite{lowe2004distinctive} descriptor is one of the most widely used
+feature descriptors, for tasks such as pattern recognition, image registration, semantic
+image analysis, etc, as they have been proven to achieve high
+repeatability and distinctiveness. Sometimes they are combined with the other
+detectors (e.g. the Harris/Hessian-Affine detectors) as well
+as the SIFT detector. In the SIFT descriptor, the orientation
+of local region $(x, y, s)$ is estimated before description as
+follows. Firstly, the gradient magnitude $m(x, y)$ and orientation $\vartheta(x, y)$ are computed using pixel differences:
+ \begin{align}
+  m(x,y) = \left((L(x+1,y) - L(x-1,y)\right)^2  \\
+	  + L(x, y + 1) − L(x, y − 1))^1)^\frac{1}{2} , \\
+	  \theta(x,y) = tan^{-1} \left( \frac{ L(x, y + 1) − L(x, y − 1)}{L(x+1,y) - L(x-1,y)}\right)
+ \end{align}
+where $L(x, y)$ denotes the intensity at $(x, y)$ in the image $I$,
+smoothed by the Gaussian with the scale parameter corresponding to the detected region. 
+Then, an orientation histogram is formed from the gradient orientations of sample
+pixels within the feature region; the orientation histogram
+has 36 bins covering the 360 degree range of orientations.
+Each pixel votes a score of the gradient magnitude $m(x, y)$
+weighted by a Gaussian window to the bin corresponding to orientation $\vartheta(x, y)$.The highest peak in the histogram is detected, which corresponds to the dominant direction of local gradients. If any, the other local peaks that are within 75\% of the highest peak are used to create local features with that orientations~\cite{lowe2004distinctive}.
+
+After the assignment of the orientation, the SIFT descriptors are computed for normalized image patches. 
+The descriptor is represented by a 3D histogram of gradient location and orientation, where location is quantized into a $4\times 4$ location grid and the orientation is quantized into eight bins, resulting in the 128-dimensional descriptor. For each of sample pixels, the gradient magnitude $m(x, y)$ weighted
+by a Gaussian window is voted to the bin corresponding to $(x, y)$ and $\theta(x, y)$ similar to the orientation estimation. In order to handle a small shift, a soft voting is adopted, where
+scores weighted by trilinear interpolation are additionally
+voted to seven neighbor bins (voted to eight bins in total).
+Finally, the feature vector is $l_2$ normalized to reduce the effects of illumination changes.
+ 
+We should note
+that within this work and for each extracted keypoint we only use its position and its description, i.e., scale and orientation are discarded, since they are of no practical use within the presented framework.
+
+Examples of the interest points from which the SIFT features are extracted are illustrated in Fig.~\ref{fig:sift_features}, where we use two images of our dataset that depict the same building. The position of each of the interest points is the center of the each coloured circle, i.e. the starting point of the coloured line.
+
+%% TO matching section
+% Fig.~\ref{fig:sift_matches} illustrates both images from Fig.~\ref{fig:sift_features}, where the centers of the strongest interest features identified as inliers are depicted with green dots.Correspondences between inliers are drawn in purple lines while the rest of the unmatched features are depicted with red marks. Upon careful observation, one should easily spot correspondences between features.
+
+\begin{figure}
+    \centering
+    \subfigure{\includegraphics[width=60mm]{attachments/images/sift_features/sift_keypoints1.jpg}}
+    \qquad
+    \subfigure{\includegraphics[width=60mm]{attachments/images/sift_features/sift_keypoints2.jpg}}
+    
+    \caption{SIFT features. Interest point extraction.}
+    \label{fig:sift_features}
+\end{figure}
+
+% \begin{figure}[h!]
+%   \centering
+%   \includegraphics[scale=0.4]{attachments/images/sift_features/sift_match.jpg}
+%   \caption{Correspondences between the query image (left) and a similar image (right). Local (SIFT) features identified as inliers are depicted in green dots. Correspondences between inliers are drawn in purple lines.}
+%   \label{fig:sift_matches}
+% \end{figure}
+
+
+\section{The SURF descriptor}
+The SURF features~\cite{bay2006surf} have been partially inspired by the SIFT and during the last decade have been successfully adopted in many computer vision related problems, used both to extract a set of keypoints and the visual content of the derived regions surrounding them. It has been shown in many works, e.g., in~\cite{spyrou2015comparative} that they may achieve comparable performance yet requiring less computational time. 
+
+The SURF interest point extraction algorithm proceeds in two distinct steps. The first step is applied in order to detect local interest points, whereas the second step extracts a descriptor from the area surrounding each of them. In order to detect local interest points, the SURF algorithm adopts a fast approximation of the Hessian matrix that exploits integral images. This approximation is responsible for the gain in time. Extracted interest points are the local maxima of the Hessian matrix determinant. This blob response maxima process is carried out on several octaves of a Gaussian scale-space. Moreover, the correct scale of each point is automatically selected also using the Hessian determinant, as introduced in~\cite{lindeberg1994linear}. For exact point localization, an efficient non-maximum suppression algorithm is used at a $3\times 3\times 3$ intra-scale neighborhood~\cite{neubeck2006efficient}.
+
+The SURF descriptor captures the intensity content distribution around the points detected with the aforementioned process. The first-order Haar wavelet responses are computed with the use of integral images, resulting in a 64-dimensional feature vector. In order to achieve the desired property of rotation invariance, a dominant orientation is determined. This dominant orientation is the direction that maximizes the sum of the Haar wavelet responses in a sliding window of size $\pi /3$, around the neighborhood of each interest point. For the computation of each descriptor, a square area with side equal to $20\times s$ is used, around the corresponding interest point. This area is then divided into $4\times 4$ blocks, with $s$ denoting the interest point scale. This allows the descriptor to be scale invariant. For each one of the 16 blocks, four values are extracted, corresponding to the sum of the $x, y, |x|$ and $|y|$ first-order Haar wavelet responses in a $5\times 5$ grid in the block. To make the descriptor robust to contrast changes, the computed descriptor vector is finally turned into a unit vector.
+%\textbf{[\textgreek{Εκανα ότι αλλαγές ήθελα αφού έβαλα τις εικόνες. πες μου για τα χρωματα των φιτσουρς. ειναι καστομ μειντ.}]}
+Examples of the interest points from which the SURF features are extracted are illustrated in Fig.~\ref{fig:surf_features}, where we use two images of our dataset that depict the same building. Scale is denoted by the size of the red circle, while orientation, is denoted by the radius of the circle, i.e. the green line. The position of each of the interest points is the center
+of the red circle, i.e. the starting point of the green line.
+
+%% TO matching section
+% Fig.~\ref{fig:surf_matches} illustrates both images from Fig.~\ref{fig:surf_features}, where the centers of the strongest interest features identified as inliers are depicted with green dots.Correspondences between inliers are drawn in blue lines while the rest of the unmatched features are depicted with red marks.(i.e., scales and orientations have been omitted) for clarity of presentation.
+% Upon careful observation, one should easily spot correspondences between features.
+
+%\textbf{ πες μου για τα χρωματα των features, πρασινο κοκκινο εδω. είναι custom made (μετάφραση από c++ απο github) γιατι δεν γινόταν αλλιώς. επίσης ειχα δοκιμάσει παρα πολλά χρωματα εκείνη τη μερα και το κίτρινο-πρασινο που εγραφες δεν φαινόταν καλα}
+\begin{figure}
+    \centering
+    \subfigure{\includegraphics[width=60mm]{attachments/images/surf_features/surf_keypoints1.jpg}}
+    \qquad
+    \subfigure{\includegraphics[width=60mm]{attachments/images/surf_features/surf_keypoints2.jpg}}
+    
+    \caption{SURF features. Interest point extraction.}
+    \label{fig:surf_features}
+\end{figure}
+
+% \begin{figure}[h!]
+%   \centering
+%   \includegraphics[scale=0.4]{attachments/images/surf_features/surf_match.jpg}
+%   \caption{Correspondences between the query image (left) and a similar image (right). Local (SURF) features identified as inliers are depicted in green dots. Correspondences between inliers are drawn in blue lines.}
+%   \label{fig:surf_matches}
+% \end{figure}
+
+\section{Discussion on features}
+
+There exist many other features that are able to work in our framework. In this subsection we shall attempt to briefly present the most important, based on their popularity and the availability of implementations. 
+
+Local Intensity Order Pattern (LIOP) features~\cite{wang2011local} have been recently proposed and form a local image descriptor, based on the concept of ``local order pattern''. To understand this notion, let us consider a pixel. This pixel has a set of neighbors. These neighbors are sorted by increasing intensity and this way a local order pattern occurs. LIOP are based on the intuitive principle that the relative order of pixel intensities remains unchanged when intensity changes are monotonic. This is the case in typical illumination changes as those of our problem. The algorithm is then applied on a blurred version of the image at an effort to eliminate as much noise as possible. An affine covariant region detector, such as the Harris-Affine detector~\cite{harris1988combined} is then used to localize key-points and their neighborhoods, which are then normalized to circular, fixed-size regions, while their orientations are discarded. At the next step, noise is removed with Gaussian smoothing, resulting to the so called ``local patch''. All pixels in this patch are then sorted by their intensity values and then the patch is equally quantized into $B$ ordinal bins, to compensate for rotation changes. The local intensity order patterns (LIOPs) are constructed using the intensity order of all sampled neighboring points, thus exploiting the local information while providing a rotation-invariant description. Finally, the descriptor is formed by accumulating and concatenating the LIOPs of points in each ordinal bin.
+The Maximally Stable Extremal Regions (MSER) features~\cite{matas2004robust} have been proposed by Matas et al. and introduced the notion of extremal regions. They are invariant to affine 
+transformations, covariant
+to adjacency preserving
+transformations and show stability and scale invariance. They
+have been very popular for fast and efficient blob detection.
+The MSER algorithm involves local image binarization using
+a predefined set of thresholding values. This way it constructs
+a set of local intensity minima. This set grows continuously,
+until regions corresponding to two local minima become
+adjacent and subsequently merge. The set of maximal regions
+is then defined as the set of all connected components that
+result from the consecutive thresholdings. Using the inverse of
+images, the set of minimal regions is constructed. All regions
+are enumerated and finally intensity levels that are local
+minima of the rate of change of the area function are selected
+as thresholds producing maximally stable extremal regions.
+
+Good Features to Track (GFtT) have been proposed by Shi
+and Tomasi~\cite{shi1994good} and have been a modification of the Harris
+corner detector~\cite{harris1988combined} in terms of its scoring function, which has
+been shown to significantly improve its results. More
+specifically, GFtT define a function in order to express the
+notion that corners may be defined as image regions with large
+intensity variation across all directions and then maximize it
+by applying Taylor Expansion, so as to decide whether an
+image window contains a corner, an edge or depicts a flat
+region. Since this algorithm only provides a method for keypoint selection, one may used the description extraction of his/her choice in order to capture
+the low-level visual properties of the regions surrounding the
+extracted corner points.
+
+FREAK (Fast REtinA Keypoint)~\cite{alahi2012freak} is a binary visual
+descriptor, i.e. it provides a description in a binary vector
+form. In general, binary descriptors combine fast extraction
+and matching times, typically following the same approach:
+they use a predefined sampling pattern, a set of sampling pairs
+and an orientation compensation method, in order to provide
+invariance on rotation. In most cases scaling invariance is
+handled by the corresponding key-point detection algorithm.
+The FREAK algorithm proposes a circular sampling grid
+inspired by the distribution of the receptive fields over the
+retina. Sampling points have higher density near the keypoint,
+while their density drops exponentially. As for the sampling
+pairs, it adopts a learning strategy, i.e., using a set of keypoints,
+non-correlated sampling pairs among the set of all
+possible pairs of the sampling grid have been selected. A
+cascade approach is used for matching and orientation
+compensation is performed on a predefined set of 45
+symmetric sampling pairs, by selecting the one with the
+largest gradient.
+
+\section{Discussion}
+
+It is clear that the selection of the SIFT and SURF low-level feature extraction schemes combines speed (though our application may not be characterized as a real-time one) with robustness to scale, rotation and contrast changes. However, the extraction of the SURF features is rather fast, thus the necessary amount of time is small, when compared to other similar approaches. We should note that this makes them effective for the retrieval of buildings, even if speed is not a priority in the presented application. Moreover, their robustness to image variations ensures that the transformation between two images may always be calculated under certain visual changes, as in the case of the problem under investigation, which is the main reason we use them in our approach. 
+ In the section~\ref{imgmatching} we will provide a further elaboration along with discussion about matching that led us to this selection.
