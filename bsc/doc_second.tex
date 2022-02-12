@@ -1,0 +1,1198 @@
+
+Στο δεύτερο κεφάλαιο, παρουσιάζονται και αναλύονται οι αλγόριθμοι των περιγραφέων, εστιάζοντας στον εντοπισμό σημείων ενδιαφέροντος, 
+για την εξαγωγή οπτικών χαρακτηριστικών.
+Η παρούσα εργασία στοχεύει στην αξιολόγηση και τη σύγκριση των παραγόμενων αποτελεσμάτων από τους συγκεκριμένους περιγραφείς, 
+σε μια πεπερασμένη σειρά εικόνων (καρέ), κατά τις οποίες εφαρμόζονται τεχνητές τροποποιήσεις στα γεωμετρικά χαρακτηριστικά των εικόνων, 
+στην κλίμακα και τη γωνία περιστροφής τους.
+
+\section{Περιγραφείς Σημείων Ενδιαφέροντος (Local Descriptors)}
+\label{sec:local_des}
+
+Στην παρούσα ενότητα, παρουσιάζονται οι έξι περιγραφείς σημείων ενδιαφέροντος, που μελετήθηκαν για την παρούσα εργασία.
+Πρέπει να σημειώσουμε ότι σε κάθε ενότητα παρουσιάζεται συνοπτικά το θεωρητικό υπόβαθρο του κάθε αλγορίθμου ακολουθούμενο από δείγματα καρέ εικόνων,
+επεξεργασμένα με τον αντίστοιχο περιγραφέα. Πιο συγκεκριμένα, παρατίθενται:
+
+\begin{enumerate}
+  
+
+\item Αυθεντικό καρέ, όπως έχει εξαχθεί από το βίντεο, χωρίς καμιά επεξεργασία.
+\item Τροποποιημένο καρέ, το οποίο έχει προκύψει από το αυθεντικό έπειτα από ενδεχόμενη περιστροφή ή/και αλλαγή κλίμακας.
+\item Αυθεντικό καρέ, στο οποίο έχουν προστεθεί τα σημεία ενδιαφέροντος του εκάστοτε περιγραφέα.
+\item Τροποποιημένο καρέ, στο οποίο έχουν προστεθεί τα σημεία ενδιαφέροντος του εκάστοτε περιγραφέα.
+\item Συνδυασμένη εικόνα των α και δ, στην οποία φαίνονται οι αντιστοιχίες των ανακτηθέντων σημείων ενδιαφέροντος (inliers) της μετασχηματισμένης εικόνας.
+
+
+\end{enumerate}
+
+\newpage
+
+Οι γεωμετρικές μεταβολές των τροποποιημένων εικόνων-καρέ διακρίνονται σε περιστροφή $20^{\circ}$ και σε κλίμακα 120\%.
+Η κατηγοριοποίηση στην ενότητα~\ref{sec:local_des} διακρίνεται σε δύο διαφορετικές ομάδες καρέ, εκούσια επιλεγμένες, ώστε στην πρώτη ομάδα να υπάρχει ένα φυσιολογικό-υγιές
+ καρέ (Σχήμα~\ref{fig:figs_healthy}), ενώ στη δεύτερη να απεικονίζεται έλκος (Σχήμα~\ref{fig:figs_dis}), ώστε να αναδειχθεί με σαφήνεια το διαφορετικό αποτέλεσμα στον κάθε περιγραφέα.\\
+ 
+
+ 
+\begin{figure}[!ht]
+\begin{minipage}[b]{0.5\linewidth}
+\centering
+\includegraphics[width=7cm]{../attachments/normal_a.png}
+\caption*{(α)}
+\label{fig:normal_1}
+\end{minipage}
+\hspace{0.9cm}
+\begin{minipage}[b]{0.5\linewidth}
+\centering
+\includegraphics[width=7cm]{../attachments/normal_b.png}
+\caption*{(β)}
+\label{fig:normal_2}
+\end{minipage}
+\caption{Τα σχήματα (α) και (β) απεικονίζουν, ένα καρέ από την ακολουθία των wce video και το καρέ του προηγούμενου σχήματος μετά την τροποποίηση αντίστοιχα, χωρίς την παρουσία έλκους.}
+\label{fig:figs_healthy}
+\end{figure} 
+
+
+
+\begin{figure}[!ht]
+\begin{minipage}[b]{0.5\linewidth}
+\centering
+\includegraphics[width=7cm]{../attachments/elkos_c.png}
+\caption*{(α)}
+\label{fig:elkos_1}
+\end{minipage}
+\hspace{0.9cm}
+\begin{minipage}[b]{0.5\linewidth}
+\centering
+\includegraphics[width=7cm]{../attachments/elkos_d.png}
+\caption*{(β)}
+\label{fig:elkos_2}
+\end{minipage}
+\caption{Τα σχήματα (α) και (β) απεικονίζουν, ένα καρέ από την ακολουθία των wce video και το καρέ του προηγούμενου σχήματος μετά την τροποποίηση αντίστοιχα, με την παρουσία έλκους.}
+\label{fig:figs_dis}
+\end{figure} 
+
+\newpage
+ 
+ \section{Ο περιγραφέας MSER (Maximally Stable External Regions) } 
+ 
+ Ο περιγραφέας MSER είναι ένας αλγόριθμος εντοπισμού περιοχών (region detection algorithm), που προτάθηκε από τον Matas~\cite{matas2004robust}, ο οποίος εξάγει από την εικόνα έναν αριθμό από πανομοιότυπες περιοχές.
+Οι παράγοντες, που ορίζονται υπεύθυνοι για την αναλλοίωτη εκτέλεση των αλγορίθμων αναγνώρισης περιοχών, μπορούν να θεωρηθούν οι μεταβολές φωτεινότητας, 
+περιστροφής και κλίμακας. Η αναγνώριση περιοχών θα πρέπει να είναι επαναλαμβανόμενη, σταθερή και ικανή να εξάγει διακριτές περιοχές. Στο Σχήμα~\ref{fig:mser_affine1} φαίνεται η επαναληπτικότητα
+κατά την οποία αναγνωρίζονται οι περιοχές.\par
+Ο MSER υιοθετεί την προσέγγιση των περιγραφέων, που βασίζονται στο μοντέλο αφινικών μετασχηματισμών, όπως και ο Εigen (Kεφάλαιο~\ref{sec:eigen_ch}).
+Οι αφινικοί μετασχηματισμού όχι μόνο αποκρίνονται σε γεωμετρικές μεταβολές κατά κλίμακα και διεύθυνση,
+αλλά και στις διαφορετικές προοπτικές και γωνίες λήψης, που μπορούν να παρουσιάσουν οι εικόνες, όπως φαίνεται στο Σχήμα ~\ref{fig:mser_affine2}.\par
+Στην πραγματικότητα, για μια μικρή περιοχή της εικόνας οποιαδήποτε συνεχής παραμόρφωση, μπορεί εύκολα να υπολογιστεί με αφινικό μετασχηματισμό.\par
+Για να εντοπιστούν τα σημεία MSER, οι περιοχές υπολογίζονται κατωφλιώνοντας την εικόνα σε όλα τα δυνατά επίπεδα της γκρι κλίμακας (τεχνική που εφαρμόζεται μόνο σε εικόνες διαβαθμίσεων του γκρι).
+Η λειτουργία αυτή μπορεί να διεξαχθεί αποτελεσματικά, αρχικά ταξινομώντας τα εικονοστοιχεία (pixels) με βάση την τιμή που παρουσιάζουν σε γκρι κλίμακα, 
+αυξάνοντας σταδιακά την περιοχή εντοπισμού, καθώς μεταβάλλεται παράλληλα και η τιμή του κατωφλίου.
+Οι περιοχές που εντοπίζει ο αλγόριθμος είναι συστατικά ορισμένων γκρι επιπέδων (gray-levels) 
+ της αρχικής εικόνας. Καθώς το κατώφλι μεταβάλλεται, οι περιοχές που μένουν σχεδόν αναλλοίωτες μέσα στο εύρος των διαφορετικών κατωφλίων
+ μαρκάρονται ως σταθερές. Στο σχήμα Σχήμα~\ref{fig:mser_cat} φαίνονται οι μεταβάσεις κατά τις διαφορετικές κατωφλιώσεις του καρέ μέχρι τον εντοπισμό των σημείων ενδιαφέροντος.\\
+  
+Η εξαγωγή περιοχών με τη χρήση του MSER αποτελείται από τα εξής βήματα: 
+  
+  \begin{enumerate}
+   
+  \item Εφαρμόζεται μια σειρά από μάσκες κατωφλίωσης στην αρχική εικόνα.
+  \item Όλα τα pixels, που έχουν φωτεινότητα μικρότερη του κατωφλίου, γίνονται λευκά, διαφορετικά γίνονται μαύρα.
+  \item Εξάγονται οι περιοχές που εντοπίστηκαν από την κάθε μάσκα κατωφλίωσης.
+  \item Αποθηκεύεται το κατώφλι για τις περιοχές που είναι ``σταθερές'' (``Μaximally Stable''). 
+  \item Η περιοχή μαρκάρεται με μια έλλειψη.
+  \item Αποθηκεύονται οι περιοχές-περιγραφείς ως σημεία ενδιαφέροντος.
+
+ \end{enumerate}
+ 
+\newpage
+  
+
+
+ Μία ``σταθερή'' περιοχή μπορεί να απορριφθεί στις ακόλουθες περιπτώσεις:
+  
+  \begin{itemize}
+  \item Όταν είναι πολύ μεγάλη (βάσει αντίστοιχης εσωτερικής παραμέτρου).
+  \item Όταν είναι πολύ μικρή ( βάσει αντίστοιχης παραμέτρου).
+  \item Όταν είναι ασταθής (βάσει αντίστοιχης παραμέτρου).
+  
+  \end{itemize}
+
+ 
+  % http://www.micc.unifi.it/delbimbo/wp-content/uploads/2011/03/slide_corso/A34%20MSER.pdf
+ 
+
+				%%%% σχηματα %%%
+\begin{figure}[!ht]
+\centering
+\begin{minipage}[b]{0.3\linewidth}
+\includegraphics[scale=0.2]{../attachments/mser_fig.png}
+\end{minipage}
+\caption{Τα σημεία MSER εξάγονται και ταιριάζονται από έναν αριθμό εικόνων με διαφορετική γωνία λήψης~\cite{mikolajczyk2004scale}.}
+\label{fig:mser_affine1}
+\end{figure}
+
+\begin{figure}[!ht]
+\centering
+\begin{minipage}[b]{0.6\linewidth}
+\includegraphics[height=4cm]{../attachments/mser_affine.png}
+\end{minipage}
+\caption{Περιγραφέας αφινικών μετασχηματισμών (MSER) που εφαρμόζεται στο ταίριασμα των εικόνων με διαφορετική προοπτική.}
+\label{fig:mser_affine2}
+\end{figure}  
+ 
+
+% \begin{figure}[!ht]
+% 
+% \begin{minipage}[b]{0.5\linewidth}
+% \centering
+% \includegraphics[height=4cm]{../attachments/mser_cat1.png}
+% \end{minipage}
+% \hspace{0.5cm}
+% \begin{minipage}[b]{0.2\linewidth}
+% \centering
+% \includegraphics[height=4cm]{../attachments/mser_cat2.png}
+% \end{minipage}
+% \end{figure} 
+%   
+% \begin{figure}[!ht]
+% \begin{minipage}[b]{0.4\linewidth}
+% \centering
+% \includegraphics[height=4cm]{../attachments/mser_cat3.png}
+% \end{minipage}
+% \hspace{0.2cm}
+% \begin{minipage}[b]{0.5\linewidth}
+% \centering
+% \includegraphics[height=4cm]{../attachments/mser_cat4.png}
+% \end{minipage}
+% \caption{Εικόνα σε πολλαπλά επίπεδα κατωφλίωσης, εντοπισμός και μαρκάρισμα των "σταθερών" περιοχών.}
+% \label{fig:mser_cat}
+% \end{figure} 
+
+\newpage
+
+ \begin{figure}[!ht]
+
+\centering     %%% not \center
+
+
+\subfigure{\label{fig:b}\includegraphics[width=60mm]{../attachments/mser_cat1.png}}
+\subfigure{\label{fig:b}\includegraphics[width=60mm]{../attachments/mser_cat2.png}}
+\qquad
+\subfigure{\label{fig:b}\includegraphics[width=60mm]{../attachments/mser_cat3.png}}
+\subfigure{\label{fig:b}\includegraphics[width=60mm]{../attachments/mser_cat4.png}}
+
+
+
+\caption{Εικόνα σε πολλαπλά επίπεδα κατωφλίωσης, εντοπισμός και μαρκάρισμα των ``σταθερών'' περιοχών.}
+\label{fig:mser_cat}
+
+\end{figure} 
+%  http://vision.ia.ac.cn/Students/wzh/publication/liop/LIOP_Paper.pdf
+
+\newpage
+
+\subsection{Δείγματα καρέ σημείων MSER}
+
+Στα Σχήματα~\ref{fig:mser_healthy_figs} και~\ref{fig:mser_dis_figs} παρουσιάζονται τα σημεία ενδιαφέροντος βάσει του περιγραφέα MSER σε αυθεντικό και τροποποιημένο καρέ, ενώ στο τελευταίο καρέ 
+γίνεται το ταίριασμα των δύο προηγούμενων, με την μετατόπιση των σημείων ενδιαφέροντος.\\
+
+
+
+\begin{figure}[!ht]
+\begin{minipage}[b]{0.5\linewidth}
+\centering
+\includegraphics[height=7.5cm]{../attachments/mser1_c.png}
+\caption*{(α)}
+\label{fig:mser_1}
+\end{minipage}
+\hspace{0.9cm}
+\begin{minipage}[b]{0.5\linewidth}
+\centering
+\includegraphics[height=7.5cm]{../attachments/mser1_d.png}
+\caption*{(β)}
+\label{fig:mser_2}
+\end{minipage}
+\end{figure} 
+
+
+\begin{figure}[!h]
+\begin{minipage}[b]{1.0\linewidth}
+\centering
+\includegraphics[scale=0.49]{../attachments/mser1_e.png}
+\caption*{(γ)}
+\label{fig:mser_3}
+\end{minipage}
+\caption{
+(α) σημεία ενδιαφέροντος MSER που εξάγονται από το αυθεντικό καρέ του σχήματος~\ref{fig:figs_healthy}, 
+(β) σημεία ενδιαφέροντος MSER που εξάγονται από το τροποποιημένο καρέ του σχήματος~\ref{fig:figs_healthy}, (γ) ταίριασμα σημείων ανάμεσα στα δυο καρέ.}
+\label{fig:mser_healthy_figs}
+\end{figure} 
+ 
+ 
+\newpage
+ 
+
+\begin{figure}[!ht]
+\begin{minipage}[b]{0.5\linewidth}
+\centering
+\includegraphics[height=7.5cm]{../attachments/mser2_c.png}
+\caption*{(α)}
+\label{fig:mser_4}
+\end{minipage}
+\hspace{0.9cm}
+\begin{minipage}[b]{0.5\linewidth}
+\centering
+\includegraphics[height=7.5cm]{../attachments/mser2_d.png}
+\caption*{(β)}
+\label{fig:mser_5}
+\end{minipage}
+
+\end{figure} 
+
+ 
+% 
+\begin{figure}[!h]
+\begin{minipage}[b]{1.0\linewidth}
+\centering
+\includegraphics[scale=0.49]{../attachments/mser2_e.png}
+\caption*{(γ)}
+\label{fig:mser_6}
+\end{minipage}
+\caption{(α) σημεία ενδιαφέροντος MSER που εξάγονται από το αυθεντικό καρέ του σχήματος~\ref{fig:figs_dis},
+(β) σημεία ενδιαφέροντος MSER που εξάγονται από το τροποποιημένο καρέ του σχήματος~\ref{fig:figs_dis}, (γ) ταίριασμα σημείων ανάμεσα στα δυο καρέ.}
+\label{fig:mser_dis_figs}
+\end{figure} 
+ 
+
+\newpage %%%%%%%%%%%%%%%%%%SIFT %%%%%%%%%%%%%%%%
+
+\section{Ο περιγραφέας SIFT (Scale Invariant Feature Transform)}
+
+Ο SIFT είναι ένας αλγόριθμος που εντοπίζει διακριτά σημεία στις εικόνες,
+εφαρμόζοντας την Γκαουσιανή συνάρτηση διαφορών (Differences of Gaussian, DoG),
+στα διάφορα πεδία κλιμάκωσης της εικόνας. Τα τοπικά μέγιστα της Γκαουσιανής συνάρτησης 
+αποτελούν και τα επιλεγμένα σημεία ενδιαφέροντος. Έπειτα εξάγεται ένας περιγραφέας για
+κάθε σημείο, βασισμένος στη χαρακτηριστική κλίμακα της εικόνας.
+Ο αλγόριθμος αρχικά προτάθηκε από τον Lowe~\cite{lowe2004distinctive} και χρησιμοποιήθηκε σε προβλήματα αναγνώρισης αντικειμένων.
+Αναλύοντας τον αλγόριθμο θα μπορούσαμε να διακρίνουμε τα εξής βήματα λειτουργίας του.
+
+\begin{enumerate}
+
+\item \textbf{Δημιουργία χώρου κλιμάκωσης:} Ως προπαρασκευαστικό στάδιο, δημιουργούνται 
+πολλαπλές αναπαραστάσεις της αρχικής εικόνας, για να εξασφαλιστεί αναλλοίωτη η κλίμακα,
+κατασκευάζοντας ένα χώρο κλιμάκωσης. Η ιδέα είναι να γίνει αναδρομικά η σταδιακή θόλωση 
+της εικόνας και έπειτα η σμίκρυνσή της, στον αριθμό της προεπιλεγμένης κλίμακας πράγμα που φαίνεται αντίστοιχα στα Σχήματα~\ref{fig:sift_figure1} και~\ref{fig:sift_figure2}.
+
+\item \textbf{Προσέγγιση Γκαουσιανής συνάρτησης (DoG):}  Η εφαρμογή της είναι πολύ αποδοτική στον 
+εντοπισμό σημείων ενδιαφέροντος, αλλά έχει μεγάλο κόστος υπολογισμού.
+Έτσι, χρησιμοποιώντας τις θολωμένες εικόνες, διαφορετικής κλιμάκωσης, υπολογίζονται οι
+διαφορές ανάμεσα στις εικόνες, με αποτέλεσμα να εντοπίζονται ακμές και γωνίες, που καθίστανται
+χρήσιμες για τον μετέπειτα εντοπισμό των σημείων ενδιαφέροντος της εικόνας. 
+
+\item \textbf{Υπολογίζοντας σημεία ενδιαφέροντος:} Τα σημεία ενδιαφέροντος εξάγονται από τον
+υπολογισμό των τοπικών ελάχιστων \& μεγίστων γύρω από τα σημεία ενδιαφέροντος,
+από τις χαμηλότερες προς τις υψηλότερες κλίμακες τις εικόνας αντίστοιχα, όπως φαίνεται στο Σχήμα~\ref{fig:sift_figure4}
+
+\end{enumerate}
+
+\begin{figure}[!ht]
+\centering
+\begin{minipage}[b]{0.5\linewidth}
+\includegraphics[height=7.5cm]{../attachments/sslenna.jpg}
+\end{minipage}
+\caption{Δημιουργία πολλαπλών αναπαραστάσεων της αρχικής εικόνας σταδιακής θόλωσης.}
+\label{fig:sift_figure1}
+\end{figure}
+
+
+
+\newpage
+
+
+
+\begin{figure}[!ht]
+\centering
+\begin{minipage}[b]{0.5\linewidth}
+\includegraphics[height=7.5cm]{../attachments/sift-octaves.jpg}
+\end{minipage}
+\caption{Αναδρομική θόλωση και σμίκρυνση της εικόνας στον αριθμό της επιλεγμένης κλίμακας.}
+\label{fig:sift_figure2}
+\end{figure}
+
+\vspace{1cm}
+
+\begin{figure}[ht]
+\begin{minipage}[b]{0.5\linewidth}
+\centering
+\includegraphics[height=7cm]{../attachments/sift-dog-idea.jpg}
+\caption*{(γ)}
+\end{minipage}
+\hspace{0.9cm}
+\begin{minipage}[b]{0.5\linewidth}
+\centering
+\includegraphics[height=7cm]{../attachments/sift-scale.png}
+\caption*{(δ)}
+\end{minipage}
+\caption{Εντοπισμός σημείων ενδιαφέροντος χώρου-κλίμακα χρησιμοποιώντας μια υπο-οκτάβα της DoG πυραμίδας~\cite{lowe2004distinctive}
+(α) Γειτονικά επίπεδα από την υπο-οκτάβα μιας DoG πυραμίδας αφαιρούνται για να παράξουν DoG εικόνες, (β) μέγιστα και ελάχιστα ακρότατα της τελικής
+τρισδιάστατης εικόνας εντοπίζονται, συγκρίνοντας ένα pixel με τα 26 γειτονικά του.}
+\label{fig:sift_figure4}
+\end{figure} 
+
+ 
+\newpage
+ 
+  
+\subsection{Δείγματα καρέ σημείων SIFT}
+ 
+Στα Σχήματα~\ref{fig:sift_healthy_figs} και~\ref{fig:sift_dis_figs} παρουσιάζονται τα σημεία ενδιαφέροντος βάσει του περιγραφέα SIFT σε αυθεντικό και τροποποιημένο καρέ, ενώ στο τελευταίο καρέ 
+γίνεται το ταίριασμα των δύο προηγούμενων, με την μετατόπιση των σημείων ενδιαφέροντος.\\
+
+
+ 
+\begin{figure}[!ht]
+\begin{minipage}[b]{0.5\linewidth}
+\centering
+\includegraphics[height=8cm]{../attachments/sift1_c.png}
+\caption*{(α)}
+\label{fig:sift_1}
+\end{minipage}
+\hspace{0.9cm}
+\begin{minipage}[b]{0.5\linewidth}
+\centering
+\includegraphics[height=8cm]{../attachments/sift1_d.png}
+\caption*{(β)}
+\label{fig:sift_2}
+\end{minipage}
+\end{figure}  
+ 
+\begin{figure}[!h]
+\begin{minipage}[b]{1.0\linewidth}
+\centering
+\includegraphics[scale=0.49]{../attachments/sift1_e.png}
+\caption*{(γ)}
+\label{fig:sift_3}
+\end{minipage}
+\caption{(α) σημεία ενδιαφέροντος SIFT που εξάγονται από το αυθεντικό καρέ του σχήματος~\ref{fig:figs_healthy},
+(β) σημεία ενδιαφέροντος SIFT που εξάγονται από το τροποποιημένο καρέ του σχήματος~\ref{fig:figs_healthy}, (γ) ταίριασμα σημείων ανάμεσα στα δυο καρέ.}
+\label{fig:sift_healthy_figs}
+\end{figure}
+
+
+
+
+
+ \newpage
+ 
+
+
+ 
+\begin{figure}[!ht]
+\begin{minipage}[b]{0.5\linewidth}
+\centering
+\includegraphics[height=9cm]{../attachments/sift2_c.png}
+\caption*{(α)}
+\label{fig:sift_4}
+\end{minipage}
+\hspace{0.9cm}
+\begin{minipage}[b]{0.5\linewidth}
+\centering
+\includegraphics[height=9cm]{../attachments/sift2_d.png}
+\caption*{(β)}
+\label{fig:sift_5}
+\end{minipage}
+
+\end{figure} 
+ 
+
+\begin{figure}[!h]
+\begin{minipage}[b]{1.0\linewidth}
+\centering
+\includegraphics[scale=0.49]{../attachments/sift2_e.png}
+\caption*{(γ)}
+\label{fig:sift_6}
+\end{minipage}
+\caption{(α) σημεία ενδιαφέροντος SIFT που εξάγονται από το αυθεντικό καρέ του σχήματος~\ref{fig:figs_dis},
+(β) σημεία ενδιαφέροντος SIFT που εξάγονται από το τροποποιημένο καρέ του σχήματος~\ref{fig:figs_dis}, (γ) ταίριασμα σημείων ανάμεσα στα δυο καρέ.}
+ \label{fig:sift_dis_figs}
+ \end{figure} 
+ 
+
+ 
+ \newpage  %%% LIOP
+
+
+\section{Ο περιγραφέας LIOP (Local Invariant Order Pattern)}
+ \vspace{1.5cm}
+ 
+Ο περιγραφέας LIOP~\cite{wang2011local}, είναι ένας τοπικός περιγραφέας εικόνας, βασισμένος στο πρότυπο της ``τοπικής ταξινόμησης'' (local order pattern).
+Το πρότυπο ταξινόμησης είναι απλά ένας κανόνας που ταξινομεί επιλεγμένες περιοχές της εικόνας, κατά αύξουσα ``ένταση'' (intensity).
+Θεωρώντας ένα συγκεκριμένο pixel $x$ και $n$ πλήθος γειτονικών $x_1$,$x_2$,$...$,$x_n$, εφαρμόζοντας το πρότυπο ταξινόμησης στο pixel $x$, περιγράφεται ουσιαστικά η μετατόπιση $\sigma$
+των ταξινομημένων γειτονικών pixels, κατά αύξουσα τιμή της ένταση, δηλαδή:
+
+\begin{equation*}
+  I(x_{\sigma_{(1)}})\leq I(x_{\sigma_{(2)}})\leq...\leq I(x_{\sigma_{(n)}})
+\end{equation*}
+
+\par
+Το πλεονέκτημα του προτύπου ταξινόμησης, είναι οτι καθίσταται αμετάβλητο στις μεταβολές της έντασης της εικόνας. Παρόλα αυτά, το συγκεκριμένο πρότυπο, μπορεί να περιγράψει μόνο ένα μικρό
+κομμάτι της εικόνας, πράγμα όχι και τόσο αποδοτικό. Ο LIOP, ενώνει όλα τα μικρά αυτά κομμάτια που υπολογίζονται σε όλη την έκταση της εικόνας, για να εξάγει έναν περιγραφέα 
+που είναι ταυτόχρονα, διακριτός και αμετάβλητος στις μεταβολές της έντασης και της φωτεινότητας της εικόνας, καθ' όλη την περιστροφή της.\par
+Για να γίνει η περιστροφή των προτύπων ταξινόμησης αμετάβλητη, οι γειτονιά των pixels γύρω από το $x$, δειγματοληπτείται περιστροφικά.
+Δηλαδή, τα σημεία $x_1,...,x_n$, δειγματοληπτούνται αντίρροπα της φοράς των δεικτών του ρολογιού, σε έναν κύκλο με ακτίνα $r$, κυκλικά του $x$,
+όπως φαίνεται και στο Σχήμα~\ref{fig:liop_circle}.
+
+\newpage
+
+\begin{figure}[!ht]
+\begin{minipage}[b]{1.0\linewidth}
+\centering
+\includegraphics[scale=0.5]{../attachments/liop_circle.png}
+\end{minipage}
+\caption{Διάταξη δειγματοληψίας του LIOP, ο μπλε κύκλος αντιπροσωπεύει την γειτονιά γύρω από το κεντρικό σημείο, ο κεντρικός λευκός κύκλος την περιοχή μέτρησης, ενώ όλο το τετράγωνο 
+αποτελεί κάποιο κομμάτι της εικόνας.}
+\label{fig:liop_circle}
+\end{figure}
+
+
+
+% είναι ότι η σχετική σειρά των εντάσεων των pixel, παραμένει αμετάβλητη όταν οι διακυμάνσεις των εντάσεων είναι μονοτονικές. 
+% Για να εκμεταλλευτεί αποτελεσματικά την ταξική πληροφορία (ordinal information) ο περιγραφέας την κωδικοποιεί 
+% και η συνολική πληροφορία χρησιμοποιείται για να διαιρέσει την τοπική περιοχή της εικόνας, σε μικρότερες περιοχές. Από τη στιγμή που ο διαχωρισμός των τμημάτων
+% και ο υπολογισμός του περιγραφέα βασίζονται στις σχετικές συσχετίσεις των εντάσεων της εικόνας, ο LIOP, είναι αμετάβλητος στις περιστροφές της εικόνας και σε 
+% μονοτονικές διακυμάνσεις εντάσεων.
+% Τέλος, βάση πειραματικών αποτελεσμάτων, είναι ανθεκτικός σε γεωμετρικούς και φωτομετρικούς μετασχηματισμούς όπως η μεταβολή της οπτικής γωνίας, θάμπωμα εικόνας 
+% και η συμπίεση JPEG.
+
+\newpage
+
+\subsection{Δείγματα καρέ σημείων LIOP}
+
+Στα Σχήματα~\ref{fig:liop_healthy_figs} και~\ref{fig:liop_dis_figs} παρουσιάζονται τα σημεία ενδιαφέροντος βάσει του περιγραφέα LIOP σε αυθεντικό και τροποποιημένο καρέ, ενώ στο τελευταίο καρέ 
+γίνεται το ταίριασμα των δύο προηγούμενων, με την μετατόπιση των σημείων ενδιαφέροντος.\\
+
+
+\begin{figure}[!ht]
+\begin{minipage}[b]{0.4\linewidth}
+\centering
+\includegraphics[height=8cm]{../attachments/liop1c.png}
+\caption*{(α)}
+\label{fig:liop_1}
+\end{minipage}
+\hspace{0.9cm}
+\begin{minipage}[b]{0.7\linewidth}
+\centering
+\includegraphics[height=8cm]{../attachments/liop1d.png}
+\caption*{(β)}
+\label{fig:liop_2}
+\end{minipage}
+
+ \end{figure}
+ 
+
+
+\begin{figure}[!h]
+\begin{minipage}[b]{1.0\linewidth}
+\centering
+\includegraphics[height=9cm]{../attachments/liop1e.png}
+\caption*{(γ)}
+\label{fig:liop_3}
+\end{minipage}
+\caption{(α) σημεία ενδιαφέροντος LIOP που εξάγονται από το αυθεντικό καρέ του σχήματος~\ref{fig:figs_healthy},
+(β) σημεία ενδιαφέροντος LIOP που εξάγονται από το τροποποιημένο καρέ του σχήματος~\ref{fig:figs_healthy},
+(γ) ταίριασμα σημείων ανάμεσα στα δυο καρέ.}
+\label{fig:liop_healthy_figs}
+\end{figure}
+
+\newpage
+
+
+\begin{figure}[!ht]
+\begin{minipage}[b]{0.4\linewidth}
+\centering
+\includegraphics[height=9cm]{../attachments/liop2c.png}
+\caption*{(α)}
+\label{fig:liop_4}
+\end{minipage}
+\hspace{0.9cm}
+\begin{minipage}[b]{0.7\linewidth}
+\centering
+\includegraphics[height=9cm]{../attachments/liop2d.png}
+\caption*{(β)}
+\label{fig:liop_5}
+\end{minipage}
+
+ \end{figure}
+
+
+
+\begin{figure}[!h]
+\begin{minipage}[c]{1.0\linewidth}
+\centering
+\includegraphics[scale=0.49]{../attachments/liop2e.png}
+\caption*{(γ)}
+\label{fig:liop_6}
+\end{minipage}
+\caption{(α) σημεία ενδιαφέροντος LIOP που εξάγονται από το αυθεντικό καρέ του σχήματος~\ref{fig:figs_dis},
+(β) σημεία ενδιαφέροντος LIOP που εξάγονται από το τροποποιημένο καρέ του σχήματος~\ref{fig:figs_dis}, 
+(γ) ταίριασμα σημείων ανάμεσα στα δυο καρέ.}
+\label{fig:liop_dis_figs}
+\end{figure}
+
+
+\newpage   %%%%%%%%%%%% ΕΙGEN **********
+
+\section{Ο Περιγραφέας FREAK (Fast Retina Keypoint)}
+
+O FREAK~\cite{alahi2012freak} είναι ένας δυαδικός περιγραφέας, εμπνευσμένος από τον αμφιβληστροειδή χιτώνα του ματιού. Δηλαδή, το μοντέλο εντοπισμού σημείων ενδιαφέροντος βάσει του FREAK, προσπαθεί να προσομοιώσει 
+την βιομετρία του ματιού. O περιγραφέας δειγματοληπτεί κυκλικά τα σημεία, με μεγαλύτερη επαναληψημότητα και πυκνότητα προς το κέντρο της εικόνας. Η πυκνότητα των σημείων 
+ελαττώνεται εκθετικά προς το κέντρο, όπως μπορεί να φανεί και στο Σχήμα~\ref{fig:freak_pattern}. \par
+Κάθε δειγματοληπτημένο σημείο εξομαλύνεται με γκαουσιανούς πυρήνες, όπου οι ακτίνα του κύκλου αντιπροσωπεύει την τυπική απόκλιση του πυρήνα.
+Στο Σχήμα~\ref{fig:freak_2}, αναπαριστά την κατανομή δειγματοληψίας σε αντιπαράθεση με τη βιομετρία του αμφιβληστροειδούς χιτώνα.\par
+Στο Σχήμα~\ref{fig:freak_3} απεικονίζονται τα μοτίβα δειγματοληψίας, όπου κάθε σχήμα αναπαριστά 128 δειγματοληπτημένα ζεύγη.
+Ο FREAK εκμεταλλεύεται αυτή τη δομή για να επιταχύνει επιπλέον το ταίριασμα ως εξής: Όταν ταιριάζονται δύο περιγραφείς σημείων, αρχικά συγκρίνονται τα 
+πρώτα 128bits. Αν η απόσταση είναι μικρότερη από ένα κατώφλι, συνεχίζει με τα επόμενα 128bits του επόμενου προτύπου δειγματοληψίας.
+Στη συνέχεια, πραγματοποιείται μία επικάλυψη των αποτελεσμάτων δειγματοληψίας, με αποτέλεσμα να επιταχύνεται περισσότερο το ταίριασμα.\par
+Περισσότερο από το 90\% των υποψήφιων σημείων ενδιαφέροντος απορρίπτονται, με τα πρώτα 128bits του περιγραφέα.
+
+\vspace{2cm}
+ \begin{figure}[!ht]
+ \begin{minipage}[c]{1.0\linewidth}
+ \centering
+\includegraphics[height=7cm]{../attachments/freak_pattern.png}
+\end{minipage}
+\caption{To πρότυπο δειγματοληψίας του FREAK, σε σύγκριση με το ανθρώπινο μάτι.}
+\label{fig:freak_pattern}
+\end{figure}
+
+\newpage
+
+ \begin{figure}[!ht]
+\begin{minipage}[c]{1.0\textwidth}
+\centering
+\includegraphics[height=7cm]{../attachments/freak_3.jpg}
+
+\end{minipage}
+\caption{H αναπαράσταση της πυκνότητας των σημείων δειγματοληψίας σε αντιπαράθεση με τις περιοχές του αμφιβληστροειδούς.}
+\label{fig:freak_2}
+\end{figure}
+
+\vspace{2cm}
+
+\begin{figure}[!ht]
+\begin{minipage}[c]{1.0\textwidth}
+\centering
+\includegraphics[height=8cm]{../attachments/freak_all.png}
+\caption{Τα διαφορετικά μοτίβα δειγματοληψίας που εκτελεί ο περιγραφέας.}
+\label{fig:freak_3}
+\end{minipage}
+\end{figure}
+
+% \begin{figure}[!ht]
+% \centering
+%  \begin{minipage}[c]{0.5\linewidth}
+% \includegraphics[height=4cm]{../attachments/freak_all.jpg}
+% \caption{Η προσέγγιση των επικαλυπτόμενων αποτελεσμάτων δειγματοληψίας, καθώς αρχικά εντοπίζεται ένα σημείο ενδιαφέροντος, και με επαναληπτικές συγκρίσεις 
+% και επικαλύψεις, μέσω ενός χρωματικού χάρτη αποστάσεων, ταιριάζονται τα βέλτιστα σημεία ενδιαφέροντος.}
+% \label{fig:freak_pattern}
+% \end{minipage}
+% \end{figure}
+
+
+
+
+
+
+Στο πλαίσιο της εργασίας χρησιμοποιούμε τoν FREAΚ, σε συνδυασμό με τους αλγορίθμους εντοπισμού γωνιών EIGEN και FAST, όπου αναλύονται εκτενώς στα επόμενα κεφάλαια~\ref{sec:eigen_ch},\ref{sec:fast_ch}.
+Για λόγους συντομίας, όπου αναφέρονται οι δύο προαναφερθέντες αλγόριθμοι εντοπισμού γωνιών, συμπεριλαμβάνεται στην πειραματική διαδικασία και ο FREAK.
+
+\newpage
+
+\section{Ο αλγόριθμος εντοπισμού γωνιών EIGEN}
+\label{sec:eigen_ch}
+\vspace{1.5cm}
+
+Ο αλγόριθμος minEigen (minimum eigen value) ή αλλιώς αλγόριθμος ελαχίστων ιδιοτιμών, ανήκει στην κατηγορία των αλγορίθμων εντοπισμού γωνιών (corner detection algorithms), 
+και είναι βασισμένος στον αλγόριθμο που προτάθηκε από τους Shi \& Tomasi(Good Features to Track)~\cite{tomasi1994good}.\par
+Ο αλγόριθμος βασισμένος, όπως και ο MSER, στο αφινικό μοντέλο, εστιάζει στην παρακολούθηση συγκεκριμένων ``καλών'' χαρακτηριστικών σε μια εικόνα (good feature object tracking), 
+τα οποία έχουν φυσική και λογική σημασία για τον σκοπό του εντοπισμού. Χρησιμοποιώντας ένα μέτρο "ανομοιότητας" (dissimilarity) που καθορίζει κατά πόσο
+ένα αντικείμενο μεταβάλλεται σε μια σειρά από καρέ. Για την παρούσα πτυχιακή εργασία, εστιάζουμε στον τρόπο και την ικανότητα του αλγορίθμου να αναγνωρίσει τα χαρακτηριστικά σε μια εικόνα με την μέθοδο
+εντοπισμού γωνιών, και όχι στην παρακολούθηση της μεταβολής τους. Στα πλαίσια της εργασίας ο αλγόριθμος συνδυάζεται με τον περιγραφέα FREAK, για την περιγραφή των σημείων ενδιαφέροντος. 
+Στη συνέχεια αναλύεται αυτή η μέθοδος:\\
+
+
+Οι γωνίες είναι σημεία της εικόνας που παρουσιάζουν υψηλότερες μεταβολές έντασης της εικόνας, σε περισσότερες από μία κατευθύνσεις. Σχήμα~\ref{fig:eigen_fig1}. \\
+Η μεταβολή της έντασης κατά μήκος μιας κατεύθυνσης μπορεί να οριστεί από το σύνολο των τετραγωνισμένων διαφορών στην εικόνα (sum-of-squared-difference, SSD), πράγμα που απoσκοπεί στη συσχέτιση των συνεχόμενων καρέ~\cite{changcorner}. 
+Το Σχήμα~\ref{fig:eigen_fig2} παρουσιάζει αυτή τη μεταβολή. Δηλαδή:
+\begin{equation}
+\label{eq1}
+  D(u,v) = \sum_{i,j} (I(i+u,j+v)-I(i,j))^{2} 
+\end{equation}
+
+
+  
+% {\Large$ D(u,v) = \sum_{i,j}(I(i+u,j+v)-I(i,j))^{2} $  }  \textbf(1)  %Εικονα 2.5
+   % http://people.scs.carleton.ca/~c_shu/Courses/comp4900d/notes/lect9_corner.pdf 
+   
+   Επισημαίνουμε ότι:
+ \begin{itemize}
+    
+
+ \item Αν το σημείο της εικόνας είναι μια περιοχή προσωρινής εντάσεως, και οι δύο ιδιοτιμές θα είναι πολύ μικρές.
+ \item Αν περιέχει μία ακμή, τότε θα υπάρχει μία μεγάλη και μία μικρή ιδιοτιμή.
+ \item Αν περιέχει ακμές σε δύο ή περισσότερους προσανατολισμούς(π.χ γωνία), τότε θα υπάρχουν δύο μεγάλες ιδιοτιμές.
+ 
+\end{itemize}
+ 
+ 
+\newpage
+
+ Αν οι τιμές $u$,$v$ των διανυσμάτων είναι μικρές, από θεώρημα Taylor, στο (1) έχουμε: 
+ 
+\begin{equation}
+    I(i+u,j+v) \approx I(i,j) + I_{x}u+I_{y}v  
+\end{equation}
+    
+    όπου
+\begin{equation}
+ I_{x} = \frac{\partial I}{\partial x} \text{ , } I_{y} = \frac{\partial I}{\partial y}  
+\end{equation}
+
+ επομένως 
+ 
+%%%%%%%%%%%%%%%%%%%%%% bgale ta sxolia %%%%%%%%%%%%%5
+
+\begin{align}
+\begin{split}
+\label{eq4}
+ (I(i+u,j+v)-I(i,j))^2 &= I(i,j)+I_xu+I_yv-I(i,j))^2 \\
+ &= (I_xu+I_yv)^2  \\
+ &= I_x^2u^2 + 2I_xI_yuv+I_y^2v^2 \\
+ &=  \begin{bmatrix}  u & v \end{bmatrix}
+ \begin{bmatrix} I_x^2 & I_xI_y \\ I_xI_y & I_y^2 \end{bmatrix}
+ \begin{bmatrix} u\\ v \end{bmatrix}  
+\end{split}
+\end{align}
+
+\begin{equation}
+\label{eq5}
+ \ref{eq1}\xrightarrow{\ref{eq4}}  D(u,v) = \begin{bmatrix} u & v \end{bmatrix}   \begin{bmatrix} \sum I_x^2 & \sum I_xI_y \\ \sum I_xI_y & \sum I_y^2 \end{bmatrix}\begin{bmatrix} u\\ v \end{bmatrix} 
+\end{equation}
+
+
+ \vspace{0.5cm}
+
+Όπου από τη \ref{eq5} φαίνεται η συνάρτηση της έλλειψης:
+\vspace{0.1cm}
+
+\begin{equation} 
+C =  \begin{bmatrix} \sum I_x^2 & \sum I_xI_y \\ \sum I_xI_y & \sum I_y^2 \end{bmatrix} %\begin{bmatrix} u\\ v \end{bmatrix} =   \begin{bmatrix} \lambda_1 & 0 \\ 0 & \lambda_2 \end{bmatrix}
+\end{equation}
+
+ 
+\vspace{0.5cm}
+ 
+Ο πίνακας C απεικονίζει την αλλαγή της εντάσεων σε μια συγκεκριμένη διεύθυνση.\\
+Στην απλή περίπτωση της ανάλυση των ιδιοτιμών(Eigen Value), λαμβάνουμε υπόψη την εξής περίπτωση:
+
+\begin{equation} 
+C =  \begin{bmatrix} \sum I_x^2 & \sum I_xI_y \\ \sum I_xI_y & \sum I_y^2 \end{bmatrix} = \begin{bmatrix} \lambda_1 & 0 \\ 0 & \lambda_2 \end{bmatrix}
+\end{equation}
+
+\vspace{0.5cm}
+
+Δηλαδή τις επικρατέστερες τιμές των διευθύνσεων που ευθυγραμμίζονται με τον άξονα $x$ ή $y$. 
+Αν κάποιο από τα $\lambda$ είναι κοντά στο 0, τότε δεν αποτελεί γωνία, και συνεχίζεται η αναζήτηση για περιοχές που είναι και οι δύο μεγάλες.\\
+Και τέλος στη γενική περίπτωση μπορεί να φανεί ότι από τη στιγμή που η έλλειψη C είναι συμμετρική, δηλαδή:
+
+\begin{equation} 
+C = Q^T \begin{bmatrix} \lambda_1 & 0 \\ 0 & \lambda_2 \end{bmatrix}Q
+\end{equation}
+
+Οι ιδιοτιμές $v_1$, $v_2$ αποτελούν τις διευθύνσεις με την ταχύτερη και αργότερη μεταβολή. Επομένως, για 
+$\lambda_2 > \lambda_1$, η $v_1$ αποτελεί τη διεύθυνση της ταχύτερης μεταβολής (μικρός άξονας) 
+και η $v_2$ τη διεύθυνση με την μικρότερη μεταβολή (μεγάλος άξονας), όπως μπορεί να φανεί στο Σχήμα~\ref{fig:eigen_ellipse}.
+ 
+\newpage
+ 
+ \begin{figure}[ht!]
+\begin{minipage}[c]{1.0\linewidth}
+\centering
+\includegraphics[height=4cm]{../attachments/eigen_fig1.png}
+\caption{Περιστρέφοντας το παράθυρο σε οποιαδήποτε κατεύθυνση, παρουσιάζεται και υψηλότερη μεταβολή στην ένταση.}
+\label{fig:eigen_fig1}
+\end{minipage}
+\end{figure}
+
+ \begin{figure}[ht!]
+\begin{minipage}[c]{1.0\textwidth}
+\centering
+\includegraphics[height=4cm]{../attachments/eigen_fig2.png}
+\caption{Η ένταση σε μια εικόνα (intensity) αλλάζει κατά μήκος μιας διεύθυνσης μπορεί να προσδιοριστεί με σύνολο τετραγωνισμένων διαφορών(Sum of Square Differences).}
+\label{fig:eigen_fig2}
+\end{minipage}
+
+\end{figure}
+
+\vspace{2cm}
+
+\begin{figure}[!h]
+\begin{minipage}[c]{1.0\linewidth}
+\centering
+\includegraphics[height=6cm]{../attachments/eigen_eclipse.png}
+\end{minipage}
+\caption{Στο Σχήμα της έλλειψης παρουσιάζονται οι κατευθύνσεις $v_1$, $v_2$ οι οποίες αποτελούν την αργότερα και την ταχύτερη μεταβολή.}
+\label{fig:eigen_ellipse}
+\end{figure}
+
+\newpage
+
+\subsection{Δείγματα καρέ σημείων EIGEN}
+ 
+Στα Σχήματα~\ref{fig:eigen_healthy_figs} και~\ref{fig:eigen_dis_figs} παρουσιάζονται τα σημεία ενδιαφέροντος βάσει του αλγορίθμου EIGEN σε αυθεντικό και τροποποιημένο καρέ, ενώ στο τελευταίο καρέ 
+γίνεται το ταίριασμα των δύο προηγούμενων, με την μετατόπιση των σημείων ενδιαφέροντος.\\
+ 
+
+ 
+\begin{figure}[!ht]
+\begin{minipage}[b]{0.45\linewidth}
+\centering
+\includegraphics[height=7.5cm]{../attachments/eigen1_c.png}
+\caption*{(α)}
+\label{fig:eigen_1}
+\end{minipage}
+\hspace{0.9cm}
+\begin{minipage}[b]{0.45\linewidth}
+\centering
+\includegraphics[height=7.5cm]{../attachments/eigen1_d.png}
+\caption*{(β)}
+\label{fig:eigen_2}
+\end{minipage}
+\end{figure}
+
+
+
+\begin{figure}[!h]
+\begin{minipage}[c]{1.0\linewidth}
+ \centering
+\includegraphics[scale=0.49]{../attachments/eigen1_e.png}
+\caption*{(γ)}
+\label{fig:eigen_3}
+\end{minipage}
+\caption{(α) σημεία ενδιαφέροντος EIGEN που εξάγονται από το αυθεντικό καρέ του σχήματος~\ref{fig:figs_healthy},
+(β) σημεία ενδιαφέροντος EIGEN που εξάγονται από το τροποποιημένο καρέ του σχήματος~\ref{fig:figs_healthy},
+(γ) ταίριασμα σημείων ανάμεσα στα δυο καρέ.}
+\label{fig:eigen_healthy_figs}
+\end{figure}
+
+\newpage
+ 
+
+ 
+ 
+\begin{figure}[ht!]
+\begin{minipage}[b]{0.4\linewidth}
+\centering
+\includegraphics[height=9cm]{../attachments/eigen2_c.png}
+\caption*{(α)}
+\label{fig:eigen_4}
+\end{minipage}
+\hspace{0.9cm}
+\begin{minipage}[b]{0.7\linewidth}
+\centering
+\includegraphics[height=9cm]{../attachments/eigen2_d.png}
+\caption*{(β)}
+\label{fig:eigen_5}
+\end{minipage}
+\end{figure} 
+
+ 
+\begin{figure}[!h]
+\begin{minipage}[b]{1.0\linewidth}
+\centering
+\includegraphics[scale=0.49]{../attachments/eigen2_e.png}
+\caption*{(γ)}
+\label{fig:eigen_6}
+\end{minipage}
+\caption{(α) σημεία ενδιαφέροντος EIGEN που εξάγονται από το αυθεντικό καρέ του σχήματος~\ref{fig:figs_dis},
+(β) σημεία ενδιαφέροντος EIGEN που εξάγονται από το τροποποιημένο καρέ του σχήματος~\ref{fig:figs_dis},
+(γ) ταίριασμα σημείων ανάμεσα στα δυο καρέ.}
+\label{fig:eigen_dis_figs}
+\end{figure} 
+ 
+ 
+
+ \newpage  %%%% FAST %%%%
+ 
+ \section{Ο αλγόριθμος εντοπισμού γωνιών FAST} 
+ \label{sec:fast_ch}
+ \vspace{1.5cm}
+ 
+ Ο αλγόριθμος FAST (Features from Accelerated Segment Test), προτάθηκε από τους Rosten και Drummond~\cite{rosten2005fusing},
+και διακρίνεται για το χαμηλό κόστος υπολογισμού του. Ο FAST, είναι ένας αλγόριθμος ανίχνευσης γωνιών (edge detector) και αναπτύχθηκε έτσι ώστε να χρησιμοποιείται σε εφαρμογές αναγνώρισης σημείων ενδιαφέροντος, πραγματικού χρόνου, οι οποίες απαιτούν χαμηλούς πόρους υπολογισμού.
+Είναι ταχύτερος από άλλους γνωστούς αλγορίθμους εξαγωγής σημείων ενδιαφέροντος,
+όπως ο DoG(difference of gaussian), που χρησιμοποιείται από τον SIFT. Όπως και ο Eigen, χρησιμοποιεί την τεχνική του συνόλου τετραγωνισμένων διαφορών(SSD), στο ταίριασμα των εικόνων.\par
+Ο FAST, χρησιμοποιεί έναν κύκλο 16 εικονοστοιχείων(pixels), για να ομαδοποιήσει τα υποψήφια στοιχεία p, που αποτελούν γωνίες. 
+Kάθε pixel εσωτερικά του κύκλου, λαμβάνει μία ταυτότητα από 1 μέχρι 16,
+με τη φορά του ρολογιού. Αν μια σειρά από Ν συνεχόμενα στοιχεία, εσωτερικά του κύκλου, 
+έχουν υψηλότερη φωτεινότητα, από το υποψήφιο pixel lp συν μιας τιμής κατωφλίου $lx > (lp + t) $,
+ή χαμηλότερη φωτεινότητα μείον της τιμής του κατωφλίου  $lx - (lp – t)$,
+τότε το pixel p, εκλέγεται ως γωνία. \par
+Στη περίπτωση του σχήματος, το χαρακτηριστικό εντοπίζεται στο pixel p, αν η ένταση τουλάχιστον 12 εικονοστοιχείων, είναι μεγαλύτερη ή μικρότερη από την αντίστοιχη ένταση του p,
+δηλαδή κάποια τιμής του κατωφλίου. Σχήμα~\ref{fig:fast_fig} \par
+Εξετάζοντας το Σχήμα~\ref{fig:fast_fig2}, η παραπάνω συνθήκη μπορεί να βελτιστοποιηθεί εξετάζονται τα pixels 1,9,5,13 ώστε να απορριφθούν τα υποψήφια pixels γρηγορότερα. 
+Αν τρία από τα test pixels παρουσιάζουν φωτεινότητα υψηλότερη ή χαμηλότερη του p τότε υπάρχει ένα σημείο ενδιαφέροντος.
+
+
+\newpage
+
+\begin{figure}[!ht]
+\begin{minipage}[b]{1.0\linewidth}
+\centering
+\includegraphics[height=7cm]{../attachments/fast_fig.png}
+\caption{O εφαρμογή του FAST σε ένα κομμάτι μιας εικόνας. Τα χρωματισμένα τετράγωνα είναι τα εικονοστοιχεία (pixels) που χρησιμοποιούνται για την περιγραφή του συγκεκριμένου χαρακτηριστικού. Το pixel p είναι το κέντρο της εντοπισμένης γωνίας. Οι διακεκομμένες γραμμές ενώνουν 12 συνεχόμενα pixels, τα οποία παρουσιάζουν φωτεινότητα υψηλότερη από εκείνη του κατωφλίου,δηλαδή του p.}
+\label{fig:fast_fig}
+\end{minipage}
+
+ \end{figure} 
+
+\begin{figure}[!hb]
+\begin{minipage}[b]{1.0\linewidth}
+\centering
+\includegraphics[height=7cm]{../attachments/fast_fig2.png}
+\caption{Βελτιστοποίηση εκλογής pixel, εξετάζοντας τα pixels 1,9,5,13, με σκοπό τη γρήγορη απόρριψή τους.}
+\label{fig:fast_fig2}
+\end{minipage}
+
+ \end{figure}  
+ 
+ \newpage
+
+\subsection{Δείγματα καρέ σημείων FAST}
+ 
+Στα Σχήματα~\ref{fig:fast_healthy_figs} και~\ref{fig:fast_dis_figs} παρουσιάζονται τα σημεία ενδιαφέροντος βάσει του περιγραφέα FAST σε αυθεντικό και τροποποιημένο καρέ, ενώ στο τελευταίο καρέ 
+γίνεται το ταίριασμα των δύο προηγούμενων, με την μετατόπιση των σημείων ενδιαφέροντος.\\
+ 
+ 
+\begin{figure}[!ht]
+\begin{minipage}[b]{0.5\linewidth}
+\centering
+\includegraphics[height=7.5cm]{../attachments/fast1_c.png}
+\caption*{(α)}
+\label{fig:fast_1}
+\end{minipage}
+\hspace{0.9cm}
+\begin{minipage}[b]{0.5\linewidth}
+\centering
+\includegraphics[height=7.5cm]{../attachments/fast1_d.png}
+\caption*{(β)}
+\label{fig:fast_2}
+\end{minipage}
+
+\end{figure} 
+
+
+\begin{figure}[!h]
+\begin{minipage}[b]{1.0\linewidth}
+\centering
+\includegraphics[scale=0.49]{../attachments/fast1_e.png}
+\caption*{(γ)}
+\label{fig:fast_3}
+\end{minipage}
+\caption{(α) σημεία ενδιαφέροντος FAST που εξάγονται από το αυθεντικό καρέ του σχήματος~\ref{fig:figs_healthy},
+(β) σημεία ενδιαφέροντος FAST που εξάγονται από το τροποποιημένο καρέ του σχήματος~\ref{fig:figs_healthy},
+(γ) ταίριασμα σημείων ανάμεσα στα δυο καρέ}
+\label{fig:fast_healthy_figs} 
+ \end{figure} 
+
+ \newpage
+
+
+
+ \begin{figure}[!ht]
+\begin{minipage}[b]{0.5\linewidth}
+\centering
+\includegraphics[height=9cm]{../attachments/fast2_c.png}
+\caption*{(α)}
+\label{fig:fast_4}
+\end{minipage}
+\hspace{0.9cm}
+\begin{minipage}[b]{0.5\linewidth}
+\centering
+\includegraphics[height=9cm]{../attachments/fast2_d.png}
+\caption*{(β)}
+\label{fig:fast_5}
+\end{minipage}
+
+\end{figure}
+
+\begin{figure}[!h]
+\begin{minipage}[b]{1.0\linewidth}
+\centering
+\includegraphics[scale=0.49]{../attachments/fast2_e.png}
+\caption*{(γ)}
+\label{fig:fast_6}
+\end{minipage}
+\caption{(α) σημεία ενδιαφέροντος FAST που εξάγονται από το αυθεντικό καρέ του σχήματος~\ref{fig:figs_dis},
+(β) σημεία ενδιαφέροντος FAST που εξάγονται από το τροποποιημένο καρέ του σχήματος~\ref{fig:figs_dis},
+(γ) ταίριασμα σημείων ανάμεσα στα δυο καρέ}
+\label{fig:fast_dis_figs} 
+ \end{figure} 
+ 
+\newpage %%%%%SURF %%%%%%%%%%%% 
+ 
+
+
+
+
+
+\section{Ο περιγραφέας SURF (Speeded Up Robust Features)}
+
+Ο περιγραφέας χαρακτηριστικών SURF, προτάθηκε το 2006 από τους Bay και Ess, Tuytelaars 
+και Van Gool~\cite{bay2006surf}.
+Είναι πολύ δημοφιλής και έχει υιοθετηθεί σε πολλά προβλήματα στον τομέα της ψηφιακής επεξεργασίας και ανάλυσης εικόνων. 
+Τα τελευταία χρόνια εφαρμόζεται με επιτυχία σε αναγνώριση προτύπων, image registration, σημασιολογική ανάλυση εικόνων, καθώς 
+έχει αποδειχτεί πειραματικά ότι επιτυγχάνει υψηλότερη επαναληπτικότητα και ακεραιότητα στα αποτελέσματά του. Επιπροσθέτως, 
+ο υπολογισμός σημείων SURF, είναι σημαντικά ταχύτερος, συγκρινόμενος με παρόμοια δημοφιλείς περιγραφείς του είδους, όπως ο SIFT (Scale Invariant Feature Transform ),
+από το οποίον και έχει εμπνευστεί~\cite{lowe1999object}. \par
+ Η μέθοδος εντοπισμού σημείων ενδιαφέροντος του αλγορίθμου, διακρίνεται σε δύο στάδια. Αρχικά, κατά το πρώτο στάδιο 
+για να μην υπάρχει εξάρτηση από την κλίμακα, η διαδικασία ανίχνευσης σημείων ενδιαφέροντος εκτελείται σε πολλαπλά επίπεδα κλιμάκωσης.
+Για τον σκοπό αυτό δημιουργείται ένας χώρος κλιμάκωσης από διαδοχικές συνελίξεις της εικόνας με γκαουσιανούς πυρήνες αυξανόμενης τυπικής απόκλισης $\sigma$, που σε κάθε επίπεδό της 
+εκτελείται η εξαγωγή σημείων ενδιαφέροντος. Ουσιαστικά, οι διαδοχικές συνελίξεις εξομαλύνουν την εικόνα όλο και πιο πολύ 
+με αποτέλεσμα στα υψηλότερα επίπεδα κλιμάκωσης, να έχουμε μια αρκετά απλοποιημένη εκδοχή της αρχικής εικόνας. 
+Την περιοχή γύρω από τα σημεία ενδιαφέροντος μπορούμε να την περιγράψουμε με διάφορους τρόπους, από απλούς όπως οι τιμές της φωτεινότητας, μέχρι πιο σύνθετους
+όπως τα ιστογράμματα των κατευθύνσεων των παραγώγων. 
+Σε δεύτερο στάδιο προκειμένου να εντοπιστούν τα τοπικά σημεία ενδιαφέροντος, ο SURF βασίζεται σε μία γρήγορη υλοποίηση του πίνακα Ηessian (Hessian Matrix). Ο πίνακας Hessian είναι ένας τετραγωνικός
+πίνακας των μερικών παραγώγων δεύτερης τάξης μιας συνάρτησης. Για να εκτιμηθεί η μήτρα, γίνεται χρήση των ακέραιων εικόνων (integral images), 
+με τις οποίες μειώνεται δραματικά ο χρόνος υπολογισμού της~\cite{viola2001rapid}.
+Η τιμή της ακέραιας εικόνας $I_{Σ}(x)$ στην θέση $x=(x,y)$ περιέχει το άθροισμα όλων των pixel της αντίστοιχης εικόνας σε μία περιοχή ορθογωνίου, με άνω αριστερά άκρο
+την αρχή $(0,0)$ και κάτω δεξιά άκρο το σημείο $x$ δηλαδή:\\
+
+   \begin{equation}
+     I_{\Sigma}(x) = \sum_{i=0}^{i\leq x} \sum_{j=0}^{i\leq y} I(i,j) 
+     \end{equation}
+
+
+\newpage
+
+Τα εξαγόμενα σημεία ενδιαφέροντος είναι τα τοπικά μέγιστα του αποτελέσματος του Xεσσιανού πίνακα~\cite{pedersen2011}.
+
+
+Κύρια προτερήματα της παραγωγής ακέραιων εικόνων είναι ο γρήγορος υπολογισμός σε κάθε στάδιο της συνέλιξης, καθώς ο χρόνος υπολογισμού είναι επίσης ανεξάρτητος του μεγέθους του φίλτρου.
+Οι ``ακέραιες'' εικόνες δημιουργούνται ως εξής:
+
+\begin{itemize}
+ 
+
+ \item Μία ``ακέραια'' εικόνα έχει τις ίδιες διαστάσεις με την εικόνα αναφοράς.
+ \item Η τιμή κάθε σημείου (χ,ψ) της ``ακέραιας'' εικόνας, είναι το σύνολο των σημείων της περιβάλλουσας περιοχής,
+που έχει εφαρμοστεί ο περιγραφέας στην εικόνα αναφοράς, σε απόσταση μικρότερη ή ίση της τιμής του σημείου (χ,ψ) όπως φαίνεται στο Σχήμα~\ref{fig:surf_figure}.
+
+
+
+\end{itemize}
+
+
+
+
+\begin{figure}[ht]
+\begin{center}
+\advance\leftskip-3cm
+\advance\rightskip-3cm
+ \includegraphics[width=1\textwidth]{../attachments/fig2_2.png}
+\caption{Η  τιμή  του σημείου (χ,ψ) στην ``ακέραια'' εικόνα (δεξιά), είναι το άθροισμα των εντάσεων(intensities) στο λευκό πλαίσιο. 
+           Η ``ακέραια'' εικόνα μπορεί να δημιουργηθεί αναδρομικά με σκοπό τη μείωση του χρόνου υπολογισμού.}
+\label{fig:surf_figure}
+\end{center}
+\end{figure}
+
+
+
+Οι ``ακέραιες'' εικόνες σχετίζονται με τον Χεσσιανό πίνακα ως εξής.
+Σημειώνουμε, ότι τα Χεσσιανά φίλτρα που εφαρμόζονται, αποτελούνται από τετράγωνα με κοινό βάρος. 
+Χρησιμοποιούμε την ``ακέραια'' εικόνα για υπολογίσουμε το άθροισμα των τιμών των σημείων ενδιαφέροντος του εκάστοτε τετραγώνου, 
+πολλαπλασιάζοντας με τον παράγοντα βάρους, και προσθέτοντας το αποτέλεσμα των συνόλων του κάθε τετραγώνου του φίλτρου~\cite{scottsmith}. 
+
+
+
+
+
+
+
+\newpage         %%%% SURF %%%%%%%%%%%%%%%%%%
+
+Προκειμένου να εντοπιστούν σημεία ενδιαφέροντος, ο SURF χρησιμοποιεί μια μέθοδο επικαλυπτόμενων φίλτρων και διαχωρίζει, το εύρος κλιμάκων σε επίπεδα και οκτάβες(scale levels \& octaves). 
+H οκτάβα ορίζεται σαν μια σειρά από φίλτρα με εύρος περίπου την διπλάσια τιμή των επιπέδων κλιμάκωσης(scale levels).
+Συμπληρωματικά, η εκάστοτε οκτάβα, διαχωρίζεται σε ομοιόμορφα επίπεδα κλιμάκωσης.
+Οι οκτάβες επικαλύπτονται για να εξασφαλίσουν πλήρης κάλυψη της κλιμάκωσης των εκάστοτε επιπέδων. Σχήμα~\ref{fig:surf_figure2},~\ref{fig:surf_figure3}
+
+\begin{figure}[ht]
+
+\advance\leftskip1cm
+       \includegraphics[width=0.8\textwidth]{../attachments/fig2_3.png}
+                \caption{3 οκτάβες με  3 επίπεδα. Έχει επισημανθεί η 3x3x3 γειτονιά του σημείου,
+                από την οποία γίνεται η εξαγωγή του περιγραφέα SURF.}
+                
+\label{fig:surf_figure2}      
+\end{figure}
+
+
+
+\begin{figure}[h!]
+\begin{minipage}[b]{1.0\linewidth}
+
+ \centering
+\includegraphics[height=9cm]{../attachments/fig2_4.png}
+\caption{Επικάλυψη οκτάβων σε διαφορετικές κλίμακες.}
+\label{fig:surf_figure3} 
+
+\end{minipage}
+\end{figure}
+
+
+
+
+\newpage
+
+
+\subsection{Δείγματα καρέ σημείων SURF}
+
+Στα Σχήματα~\ref{fig:surf_healthy_1},~\ref{fig:surf_healthy_2},~\ref{fig:surf_dis_1},~\ref{fig:surf_dis_2} και~\ref{fig:eigen_dis_figs} παρουσιάζονται τα σημεία ενδιαφέροντος βάσει του περιγραφέα SURF. 
+Λόγω της ιδιομορφίας του συγκεκριμένου αλγορίθμου, κατά τον οποίο απαιτούνται
+περισσότερες  μεταβλητές (octaves, scale levels), επισυνάπτονται δύο υποομάδες των καρέ ως εξής:
+ 
+\begin{figure}[h!]
+\begin{minipage}[b]{0.4\linewidth}
+\centering
+\includegraphics[height=8cm]{../attachments/surf1c.png}
+\caption*{(α)}
+\label{fig:surf_1}
+\end{minipage}
+\hspace{0.9cm}
+\begin{minipage}[b]{0.7\linewidth}
+\centering
+\includegraphics[height=8cm]{../attachments/surf1d.png}
+\caption*{(β)}
+\label{fig:surf_2}
+\end{minipage}
+\end{figure}
+
+
+
+\begin{figure}[h!]
+\begin{minipage}[b]{1.0\linewidth}
+\centering
+\includegraphics[scale=0.49]{../attachments/surf1e.png}
+\caption*{(γ)}
+\label{fig:surf_3}
+\end{minipage}
+\caption{(α) σημεία ενδιαφέροντος SURF που εξάγονται από το αυθεντικό καρέ του σχήματος~\ref{fig:figs_healthy},
+(β) σημεία ενδιαφέροντος SURF που εξάγονται από το τροποποιημένο καρέ του σχήματος~\ref{fig:figs_healthy},
+(γ) ταίριασμα σημείων ανάμεσα στα δυο καρέ. Για οκτάβες:1, επίπεδα κλίμακας:3.}
+\label{fig:surf_healthy_1}
+\end{figure}
+
+ 
+\newpage
+
+\begin{figure}[!ht]
+\begin{minipage}[b]{0.4\linewidth}
+\centering
+\includegraphics[height=9cm]{../attachments/surf1cc.png}
+\caption*{(α)}
+\label{fig:surf_4}
+\end{minipage}
+\hspace{0.9cm}
+\begin{minipage}[b]{0.7\linewidth}
+\centering
+\includegraphics[height=9cm]{../attachments/surf1dd.png}
+\caption*{(β)}
+\label{fig:surf_5}
+\end{minipage}
+
+ \end{figure}
+
+
+ 
+\begin{figure}[!h]
+\begin{minipage}[b]{1.0\linewidth}
+\centering
+\includegraphics[scale=0.49]{../attachments/surf1ee.png}
+\caption*{(γ)}
+\label{fig:surf_6}
+\end{minipage}
+\caption{(α) σημεία ενδιαφέροντος SURF που εξάγονται από το αυθεντικό καρέ του σχήματος~\ref{fig:figs_healthy},
+(β) σημεία ενδιαφέροντος SURF που εξάγονται από το τροποποιημένο καρέ του σχήματος~\ref{fig:figs_healthy},
+(γ) ταίριασμα σημείων ανάμεσα στα δυο καρέ. Για οκτάβες:3, επίπεδα κλίμακας:4.}
+\label{fig:surf_healthy_2}
+\end{figure}
+ 
+ 
+
+\newpage
+
+
+ 
+\begin{figure}[!ht]
+\begin{minipage}[b]{0.4\linewidth}
+\centering
+\includegraphics[height=9cm]{../attachments/surf2c.png}
+\caption*{(α)}
+\label{fig:surf_7}
+\end{minipage}
+\hspace{0.9cm}
+\begin{minipage}[b]{0.7\linewidth}
+\centering
+\includegraphics[height=9cm]{../attachments/surf2d.png}
+\caption*{(β)}
+\label{fig:surf_8}
+\end{minipage}
+
+ \end{figure}
+
+\begin{figure}[!h]
+\begin{minipage}[b]{1.0\linewidth}
+
+ \centering
+\includegraphics[scale=0.49]{../attachments/surf2e.png}
+\caption*{(γ)}
+\label{fig:surf_9}
+\end{minipage}
+\caption{(α) σημεία ενδιαφέροντος SURF που εξάγονται από το αυθεντικό καρέ του σχήματος~\ref{fig:figs_dis},
+(β) σημεία ενδιαφέροντος SURF που εξάγονται από το τροποποιημένο καρέ του σχήματος~\ref{fig:figs_dis},
+(γ) ταίριασμα σημείων ανάμεσα στα δυο καρέ. Για οκτάβες:1, επίπεδα κλίμακας:3.}
+\label{fig:surf_dis_1}
+\end{figure}
+
+
+
+\newpage
+
+ 
+\begin{figure}[!ht]
+\begin{minipage}[b]{0.4\linewidth}
+\centering
+\includegraphics[height=9cm]{../attachments/surf2cc.png}
+\caption*{(α)}
+\label{fig:surf_10}
+\end{minipage}
+\hspace{0.9cm}
+\begin{minipage}[b]{0.7\linewidth}
+\centering
+\includegraphics[height=9cm]{../attachments/surf2dd.png}
+\caption*{(β)}
+\label{fig:surf_11}
+\end{minipage}
+\end{figure}
+
+ \begin{figure}[!h]
+\begin{minipage}[b]{1.0\linewidth}
+ \centering
+\includegraphics[scale=0.49]{../attachments/surf2ee.png}
+\caption*{(γ)}
+\label{fig:surf_12}
+\end{minipage}
+\caption{(α) σημεία ενδιαφέροντος SURF που εξάγονται από το αυθεντικό καρέ του σχήματος~\ref{fig:figs_dis},
+(β) σημεία ενδιαφέροντος SURF που εξάγονται από το τροποποιημένο καρέ του σχήματος~\ref{fig:figs_dis},
+(γ) ταίριασμα σημείων ανάμεσα στα δυο καρέ. Για οκτάβες:3, επίπεδα κλίμακας:4.}
+\label{fig:surf_dis_2}
+\end{figure}
+

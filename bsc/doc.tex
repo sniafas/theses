@@ -1,0 +1,148 @@
+\documentclass[a4paper,12pt]{report}
+
+
+
+\usepackage{xgreek}
+\usepackage{xunicode}
+\usepackage{xltxtra}
+\usepackage{xcolor}
+
+% package to handle graphics
+\usepackage{graphicx}
+% package to handle multiple figures in a minipage
+\usepackage{subfigure}
+% package to extend math capabilities
+\usepackage{mathtools}
+%\usepackage{amsmath,amssymb}
+%package to activate XeTeX font manager
+\usepackage{fontspec}
+\usepackage{caption}
+\usepackage{rotating}
+\usepackage{hhline}
+\usepackage{multirow}
+\usepackage{amsmath}
+
+\usepackage[margin=2cm]{geometry}
+
+\usepackage{textcomp}
+% FONTS
+
+\defaultfontfeatures{Mapping=tex-text} 
+
+\setmainfont[Mapping=tex-text]{Times New Roman}
+\usepackage{tabularx}
+
+
+
+% package to handle line spacing
+\usepackage{setspace}
+\onehalfspacing
+
+% HEADINGS
+\usepackage{sectsty} 
+\usepackage[normalem]{ulem} 
+
+
+\usepackage{fancybox}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{url}
+
+
+\renewcommand{\labelitemii}{$\bullet$}
+
+% change captions especially for greek language - if the document is in ENGLISH, they should vanish
+% \addto\captionsenglish{%
+%   \renewcommand\prefacename{Πρόλογος}%
+%   \renewcommand\refname{Αναφορές}%
+%   \renewcommand\abstractname{Περίληψη}%
+%   \renewcommand\bibname{Βιβλιογραφία}%
+%   \renewcommand\chaptername{Κεφάλαιο}%
+%   \renewcommand\appendixname{Παράρτημα}%
+%   \renewcommand\contentsname{Περιεχόμενα}%
+%   \renewcommand\listfigurename{Κατάλογος Σχημάτων}%
+%   \renewcommand\listtablename{Κατάλογος Πινάκων}%
+%   \renewcommand\indexname{Ευρετήριο}%
+%   \renewcommand\figurename{Σχήμα}%
+%   \renewcommand\tablename{Πίνακας}%
+%   \renewcommand\partname{Μέρος}%
+%   \renewcommand\enclname{Συνημμένα}%
+%   \renewcommand\ccname{Κοινοποίηση}%
+%   \renewcommand\headtoname{Προς}%
+%   \renewcommand\pagename{Σελίδα}%
+%   \renewcommand\seename{βλέπε}%
+%   \renewcommand\alsoname{βλέπε επίσης}%
+%   \renewcommand\proofname{Απόδειξη}%
+%   \renewcommand\glossaryname{Γλωσσάρι}%
+%   }
+
+
+
+\begin{document}
+
+
+%\includegraphics[height=4\baselineskip]{../attachments/tei_logo.png}
+\begin{tabular}[b]{l}
+
+\textbf{T.E.I. ΣΤΕΡΕΑΣ ΕΛΛΑΔΑΣ} \\
+\textbf{ΣΧΟΛΗ ΤΕΧΝΟΛΟΓΙΚΩΝ ΕΦΑΡΜΟΓΩΝ}\\
+\textbf{ΤΜΗΜΑ ΜΗΧΑΝΙΚΩΝ ΠΛΗΡΟΦΟΡΙΚΗΣ Τ.Ε.}
+
+
+\end{tabular}
+
+\begin{center}
+ 
+\vspace*{3cm}
+
+
+
+\textsc{\LARGE Διερεύνηση και Yλοποίηση Mεθόδων Eξαγωγής και Παρακολούθησης Χαρακτηριστικών Βίντεο } 
+  
+\vspace*{1.5cm}
+
+\textsc{\Large\textbf{Σταύρος Ν. Νιάφας}} 
+  
+  
+\vspace*{2cm}
+
+  \textsc{\large\textbf{ΠΤΥΧΙΑΚΗ ΕΡΓΑΣΙΑ}}
+  
+\vspace*{5cm}
+
+  \textsc{\large\textbf{Eπιβλέπων}} \\
+  \textsc{\large\textbf{Δρ Ευάγγελος Χ. Σπύρου}} 
+  
+  \vspace*{5cm}
+  
+  \textsc{\normalsize{Λαμία 2014}} 
+  
+\end{center}
+
+
+
+
+\thispagestyle{empty}
+
+\include{doc_abstract}
+
+\tableofcontents
+\listoffigures
+\listoftables
+
+
+\chapter{Παραγωγή Εικόνων με την Τεχνολογία WCE}
+\input{doc_intro}
+\chapter{Αλγόριθμοι περιγραφής και αναγνώρισης σημείων ενδιαφέροντος}
+%\input{doc_second}
+\chapter{Πειραματική Αξιολόγιση}
+%\input{doc_experiment}
+%\chapter{Αποτελέσματα και Ανάλυση}
+%\input{thesis_results}
+\chapter{Συμπεράσματα}
+%\input{thesis_conclusions}
+
+
+\bibliography{docBib}
+\bibliographystyle{plain}
+\end{document}
