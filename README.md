@@ -12,4 +12,4 @@ During the last few years, the production of digital content has been continuous
 
 ### Msc Thesis - Photography Style Analysis using ML
 
-This thesis aims to recognize and quantify image aesthetics in a certain photography style (bokeh) which is characterized from the level in depth of field. The problem is treated as a task related to image aesthetics quality assessment approached with deep active learning.
+This thesis aims to recognize and quantify image aesthetics in a certain photography style (bokeh) which is characterized from the level in depth of field. The problem is treated as a task related to image aesthetics quality assessment. In addition we suggest a method to improve active learning strategies for any image classification task using deep active learning with custom and pre-trained CNN model architectures.
